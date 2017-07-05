@@ -1,0 +1,78 @@
+.gsap-example-1{
+   .box{
+      width: 40px;
+      height: 40px;
+      background-color: red;
+   }
+   .max{
+      width: 40px;
+      height: 40px;
+      background-color: green;
+   }
+   span{
+      display: inline-block;
+      width: 100px;
+      text-align: center;
+      background-color: #eee;
+      color: #333;
+   }
+}
+.gsap-example-2{
+   margin-top: 200px;
+   #ball1{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #00ff00;
+   }
+   #ball2{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ffff00;
+   }
+   #ball3{
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ff0000;
+   }
+   
+}
+.gsap-example-3{
+   margin-left: 300px;
+   #ball4{
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ffff00;
+   }
+   #ball5{
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ff00ff;
+      margin-left: 25px;
+   }
+   #ball6{
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #000fff;
+   }
+   #ball7{
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #f31133;
+      margin-left: -25px;
+      margin-top: -60px;
+   }
+}

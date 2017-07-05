@@ -1,0 +1,23 @@
+<% layout('/partials/layout.ejs') -%>
+<% block('page_title', 'index') -%>
+<% block('page_js', '/scripts/pages/svg.js') -%>
+
+<svg version="1.1" id="mark-shield" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    width="286px" height="311px" viewBox="0 0 286 311" enable-background="new 0 0 286 311" xml:space="preserve">
+    <defs>
+    <mask id="mask">
+      <polygon fill="white" points="143.705,32.138 262.554,73.118 243.826,227.782 143.705,282.861 44.218,228.222 25.821,73.889 "/>
+    </mask>
+    <g id="curtain" style="transform:translateY(260px);">
+   <rect id="cr-left" x="9.875" y="28.999" fill="#41B3A1" width="134.312" height="263.573"/>
+   <rect id="cr-right"x="144.188" y="28.999" fill="#269D8A" width="138.479" height="263.573"/>
+   </g>
+   </defs>
+<polygon fill="#D7D5D3" stroke="#A9A7A5" stroke-width="8" stroke-miterlimit="10" points="143.641,15.249 278.5,61.75 
+   257.25,237.25 143.641,299.75 30.75,237.75 9.875,62.625 "/>
+   <polygon fill="#c9c9c9" points="143.705,32.138 143.705,282.861 243.826,227.782 262.554,73.118 "/>
+   <!--mask蒙版的使用-->
+   <use mask="url(#mask)" xlink:href="#curtain"/>
+</svg>
+<div id="btn-in" style="background: grey; cursor:pointer;">increase 100</div>
+<div id="btn-de" style="background: grey; cursor:pointer; margin-top:10px;">decrease 60</div>
