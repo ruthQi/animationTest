@@ -59,6 +59,10 @@ gulp.task('copy:img', function(cb) {
     let conf = devConf.copyImg;
     return gulp.src(conf.src).pipe(gulp.dest(conf.dist));
 });
+gulp.task('copy:assets', function(cb) {
+    let conf = devConf.copyAssets;
+    return gulp.src(conf.src).pipe(gulp.dest(conf.dist));
+});
 gulp.task('dev', function() {
     var conf = devConf.watch;
     runSequence(['common'], function() {
@@ -76,7 +80,7 @@ gulp.task('dev', function() {
 });
 
 gulp.task('common', function(cb) {
-    runSequence(['del'], ['copy:img'], ['scss2css'], ['webpack'], function() {
+    runSequence(['del'], ['copy:img'], ['copy:assets'], ['scss2css'], ['webpack'], function() {
         cb();
     });
 });

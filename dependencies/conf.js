@@ -21,6 +21,10 @@ module.exports = {
         src: ['./public/images/**/*', '!./public/images/sprites/**/*', '!./public/images/animations/frames/**/*', '!./public/images/animations/dist/**/*'],
         dist: './public/dist/images'
     },
+    copyAssets: {
+        src: ['./public/scripts/assets/**/*'],
+        dist: './public/dist/scripts/assets'
+    },
     webpackjs: {
         src: './public/scripts/pages/',
         regexp: /\/public\/scripts\/pages\/(.*)\.js$/
