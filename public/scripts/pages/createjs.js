@@ -1,4 +1,5 @@
-import lib from 'pages/imageSrc'
+import lib from 'pages/imageSrc';
+import {TimelineLite} from 'gsap';
 class CreateTest{
    constructor(){
       //this.init();
@@ -18,37 +19,37 @@ class CreateTest{
    }
    init2(){
       this.stage = new createjs.Stage("demoCanvas");
-      this.stage.autoClear = false;
+      this.stage.autoClear = true;
       var container = new createjs.Container();
       this.stage.addChild(container);
-      createjs.Touch.enable(this.stage);
-
-//    testTxt = new createjs.Text();
-//    stage.addChild(testTxt);
-//    testTxt.x = 600;
-//    testTxt.y = 10;
-//    testTxt.scaleX = 3;
-//    testTxt.scaleY = 3;
-
       this.loader = new createjs.LoadQueue(true);
-      //loader.addEventListener("fileload", handleFileLoad);
+      this.loader.loadFile({
+         src: 'images/chaopao.png', id: 'chaopao'
+      })
       this.loader.addEventListener("complete", ()=>{
          this.loadLoadingComplete();
       });
-      this.loader.loadManifest(lib.manifest);
-      createjs.Ticker.setFPS(60);
-      createjs.Ticker.addEventListener('tick',()=>{
-         this.stage.update();
-      });
    }
    loadLoadingComplete(){
-      for(var i=0;i<lib.manifest.length;i++){
-         var id = lib.manifest[i].id;
-         var image1=this.loader.getResult(id);
-         var bitmap1=new createjs.Bitmap(image1);
-         this.stage.addChild(bitmap1);
-         this.stage.update();
+      this.initAnimation();
+   }
+   initAnimation(){
+      var image1 = this.loader.getResult('chaopao');
+      var data = {
+         framerate: 10,
+         images: [image1],
+         frames: {regX: -40, regY: -30,width:720, height:767},//width:165, height:292
+         animations: {
+            'run': [0, 102, 'run']
+         }
       }
+      var spriteSheet = new createjs.SpriteSheet(data);
+      var animation = new createjs.Sprite(spriteSheet, 'run');
+      this.stage.addChild(animation);
+      createjs.Ticker.on('tick', this.handleTick);
+   }
+   handleTick = () => {
+      this.stage.update();
    }
     
 }
