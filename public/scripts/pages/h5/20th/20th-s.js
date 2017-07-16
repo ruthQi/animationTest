@@ -19,7 +19,7 @@ class create20th{
       this.$stage = document.querySelectorAll(".stage");
       //第一阶段变量
       this.$dot = this.$stage[1].querySelector('.dot');
-      this.wordWidth = 0;
+      
       this.wordFlag = false;
       this.stopSnow = false;
       this.init();
@@ -48,7 +48,9 @@ class create20th{
             clearTimeout(this.speedDelayTime);
          }
       });
-      this.bindStage1Event();
+      this.$stage[1].querySelector('.text-area-wrap').addEventListener('touchstart', (e)=>{
+         this.$dot.className = this.$dot.className.split(' ')[0];
+      });
    }
    
    loadfingerPrint(time1, time2, opacity){
@@ -172,6 +174,7 @@ class create20th{
    stage1(){
       this.destory(0);
       this.stageShow(1);
+      this.bindStage1Event();
       this.$dot.className += " twinkle"
       let stage1Line = new TimelineLite;
       stage1Line.to(this.$stage[1].querySelector('.text-area-wrap'), 2, {
@@ -181,17 +184,15 @@ class create20th{
       }).to(this.$stage[1].querySelector('.info-0'), 2, {
          opacity: 1,
          onComplete: function(){
-            /*TweenMax.set(this.target, {
+            TweenMax.set(this.target, {
                className: "+=twinkle"
-            })*/
+            })
          }
       })
    }
    bindStage1Event(){
       //第一阶段事件
-      this.$stage[1].querySelector('.text-area-wrap').addEventListener('touchstart', (e)=>{
-         this.$dot.className = this.$dot.className.split(' ')[0];
-      });
+      this.wordWidth = 0;
       this.$stage[1].querySelector('.text-area-wrap').addEventListener('touchmove', (e)=>{
          this.wordWidth++;
          if(!this.wordFlag){
@@ -291,8 +292,97 @@ class create20th{
          item.draw();
       }
    }
+   bindStage2Event(){
+      this.wordWidthStage2 = 0;
+      this.wordFlagStage2 = false;
+      this.$stage[1].querySelector('.text-area-wrap').addEventListener('touchmove', ()=>{
+         this.wordWidthStage2++;
+         if(!this.wordFlagStage2){
+            if(this.wordWidthStage2 < 40){
+               this.$stage[1].querySelector('.line-1').style.height = 6 * this.wordWidthStage2 + 'px';
+            }else{
+               this.wordFlagStage2 = true;
+               this.renderWordStage2(this.srcPerfix+this.bgGroup[7], 12);
+            }
+         }
+      })
+   }
    stage2(){
-      alert('iiiii')
+      this.bindStage2Event();
+      let $infoChildren1 = this.$stage[1].querySelector('.info-1').children[1]
+      this.$dot.className += ' twinkle dot-1';
+      TweenMax.to($infoChildren1, 1, {
+         opacity: 1,
+         onComplete: ()=>{
+            $infoChildren1.className += 'on';
+            TweenMax.to($infoChildren1, 1, {
+               opacity: 1
+            })
+         }
+      })
+      let $info0 = this.$stage[1].querySelector('.info-0');
+      let stage2Line = new TimelineLite;
+      stage2Line.to(this.$stage[1].querySelector('.text-area-wrap'), 2, {
+         opacity: 1
+      }).to(this.$stage[1].querySelector('.info-1'), 2, {
+         opacity: 1
+      });
+      let stage2Line1 = new TimelineLite;
+      stage2Line1.to($info0, 2, {
+         opacity: 1,
+         onComplete: function(){
+            TweenMax.set(this.target, {
+               className: "+=twinkle"
+            })
+         }
+      }, 1);
+      let stage2Line2 = new TimelineLite;
+      stage2Line2.to($info0, 2, {
+         opacity: 0
+      }).to($info0, 1, {
+         background: "url(" + this.srcPerfix + this.bgGroup[1] + ")"
+      }).to($info0, 2, {
+         opacity: 1
+      })
+   }
+   renderWordStage2(img, num){
+      let $title = this.$stage[1].querySelector('.info-title');
+      let $animateArea = this.$stage[1].querySelectorAll('.animation-area')[1];
+      let $linefix0 = this.$stage[1].querySelector('.line-fix-0');
+      for(var timeLine = new TimelineLite; $title.hasChildNodes();){
+         $title.removeChild($title.firstChild);
+      }
+      for(var i=0;i<num;i++)
+         $title.appendChild(document.createElement('span'));
+      timeLine.set($title, {
+         width: this.fontWidth * num,
+         height: this.fontHeight,
+         opacity: 1
+      }).set($title.querySelectorAll("span"), {
+         backgroundImage: "url(" + img + ")",
+         width: this.fontWidth,
+         height: this.fontHeight
+      }).staggerTo($title.querySelectorAll("span"), this.fontTiming / 1e3, {
+         opacity: 1
+      }, "0.25");//每个的间隔时间是0.25s
+      let animateLine = new TimelineLite;
+      animateLine.to($linefix0, 1, {
+         opacity: 1
+      }).to($animateArea, 3, {
+         opacity: 1,
+         ease: Power1.easeIn
+      }).to($title, 1, {
+         opacity: 0,
+         delay: this.stageAniChangeTimes
+      }).to($animateArea, 2, {
+         opacity: 0,
+         onComplete: () => {
+            this.stage3();
+         }
+      })
+   }
+   stage3(){
+      console.log('stage3')
    }
 
 }
