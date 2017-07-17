@@ -1,5 +1,5 @@
 var PIXI = require('pixi.js');
-let s1Container, s2Container;
+let s1Container, s2Container, s3Container;
 class Potter{
    constructor(){
       this.dvalue = 0;
@@ -228,6 +228,23 @@ class Potter{
       this.container.height = 12000;
       this.mainScene = new PIXI.Container();
       //s1
+      this.renderLogo();
+      //s2
+      this.fillText();
+      //s3
+      this.fillSchool();
+
+      this.mainScene.addChild(s1Container, s2Container, s3Container);
+      this.container.addChild(this.mainScene);
+      this.bindEvent();
+      //必须设置此属性，滚动式才好使，否则滚动不起作用
+      this.scroller.setDimensions(this.viewWidth,this.viewHeight,12000,12000);
+      this.scroller.scrollTo(0,0,false);
+      this.canvasRender1.render(this.container);
+      this.updateLoop();
+   }
+   renderLogo(){
+      //s1
       s1Container = new PIXI.Container();
       s1Container.position.set(-1,0);
       let logo = new PIXI.Sprite(this.loader.resources[this.srcPerfix+'1/logo.png'].texture);
@@ -257,10 +274,6 @@ class Potter{
       let s1bg = new PIXI.Sprite(this.loader.resources[this.srcPerfix+'1/bg.png'].texture);
       s1bg.position.set(87, 0);
       s1Container.addChild(s1bg, logo);
-      //s2
-      this.fillText();
-
-      
    }
    showMask(containerInner, x, y){
       var maskContainer = new PIXI.Container();
@@ -399,15 +412,16 @@ class Potter{
       s2Container.addChild(this.rectContainer);
       s2Container.pivot.set(375, 1680);
       s2Container.position.set(375, 2480);
-
-      this.mainScene.addChild(s1Container, s2Container);
-      this.container.addChild(this.mainScene);
-      this.bindEvent();
-      //必须设置此属性，滚动式才好使，否则滚动不起作用
-      this.scroller.setDimensions(this.viewWidth,this.viewHeight,12000,12000);
-      this.scroller.scrollTo(0,0,false);
-      this.canvasRender1.render(this.container);
-      this.updateLoop();
+   }
+   fillSchool(){
+      s3Container = new PIXI.Container();
+      s3Container.position.set(0, 4000);
+      let schoolData = [];
+      for(var i=0;i<50;i++){
+         schoolData.push(this.srcPerfix+'school/'+i+'.jpg');
+      }
+      this.schoolAni = new PIXI.extras.AnimatedSprite.fromImages(schoolData);
+      s3Container.addChild(this.schoolAni);
    }
 
    bindEvent(){
@@ -496,6 +510,25 @@ class Potter{
                }
             }
          }
+         if(top >= 4000-this.viewHeight && left <= 300){
+            s3Container.position.y = top;
+            var step = 10;
+            var index = parseInt((top-4000)/step);
+            if(index<=49&&index>=0){
+               this.schoolAni.visible = true;
+               this.schoolAni.gotoAndStop(index);
+            }
+            if(top>4000+50*step){
+               this.schoolAni.visible=false;
+               this.forbidTop(4000+50*step,top)
+               s3Container.position.y=4000+50*step;
+               this.mainScene.position.y=-(4000+50*step);
+            }
+         }else if(top<4000-this.viewHeight){
+            this.schoolAni.visible=true;
+            this.schoolAni.gotoAndStop(0)
+            s3Container.position.y=4000;
+         }
       }
       this.scroller = new Scroller(scrollFun, {
          zooming: false,
@@ -521,6 +554,18 @@ class Potter{
       }else{
          this.scroller.__scrollLeft=target;
       }
+   }
+   forbidTop(target,left,force){
+      this.scroller.__enableScrollY=false;
+      this.mainScene.position.x=-target;
+      if(Math.abs(top-target)>=50&&!force){
+         new TWEEN.Tween(this.scroller)
+            .to({__scrollTop:target},100)
+            .start();
+      }else{
+         this.scroller.__scrollTop=target;
+      }
+      this.mainScene.position.y = -target;
    }
 }
 
