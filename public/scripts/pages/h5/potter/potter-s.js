@@ -421,7 +421,76 @@ class Potter{
          schoolData.push(this.srcPerfix+'school/'+i+'.jpg');
       }
       this.schoolAni = new PIXI.extras.AnimatedSprite.fromImages(schoolData);
-      s3Container.addChild(this.schoolAni);
+      this.s3SchoolBox = new PIXI.Container();
+      var s3School=new PIXI.Container();
+      s3School.position.set(87,196);
+      this.s3Sky=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/sky.jpg"].texture);
+      this.s3Sky.pivot.set(288,151)
+      this.s3Sky.position.set(288,151)
+      var s3SchoolMain=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/school.png"].texture);
+      var s3SchoolRect=new PIXI.Graphics();
+      s3SchoolRect.drawRect(0,0, 558,406);
+      s3SchoolRect.endFill();
+      s3School.mask=s3SchoolRect;
+      var s3Boats=new PIXI.Container();
+      var boatPosition=[{x:114,y:295,flag:1,flagValue:9},{x:236,y:301,flag:-1,flagValue:10},{x:301,y:304,flag:1,flagValue:7},{x:367,y:303,flag:-1,flagValue:8},{x:462,y:301,flag:1,flagValue:6}]
+      for(var i=0;i<5;i++){
+         var boatSprite=PIXI.Sprite.fromImage(this.srcPerfix+"4/boat"+i+".png")
+         boatSprite.position.set(boatPosition[i].x,boatPosition[i].y)
+         s3Boats.addChild(boatSprite)
+      }
+      setInterval(function(){
+         for(var i=0;i<5;i++){
+            s3Boats.children[i].position.x+=boatPosition[i].flag/12;
+            if(s3Boats.children[i].position.x>=boatPosition[i].x+boatPosition[i].flagValue||s3Boats.children[i].position.x<=boatPosition[i].x-boatPosition[i].flagValue){
+               boatPosition[i].flag*=-1;
+            }
+         }
+      },60)
+      var s3SchoolCloud=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/cloud1.png"].texture);
+      s3SchoolCloud.position.set(87-55,196+91)
+      this.s3Text=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/text.png"].texture);
+      this.s3Text.position.set(48,120)
+      s3School.addChild(this.s3Sky,s3SchoolMain,s3Boats,s3SchoolRect)
+      this.showMask(s3School,0,0)
+      this.s3Sky.mask=s3SchoolRect;
+      var s3Cover=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/cover.png"].texture);
+      s3Cover.position.set(41,195)
+      this.s3TextCoverBox=new PIXI.Container();
+      this.s3TextCover=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/text_cover.png"].texture);
+      this.s3TextCover.height=this.viewHeight+100;
+
+      this.s3TextCoverBox.position.set(40,0);
+      this.s3TextCoverBox.addChild(this.s3TextCover)
+      this.s3SchoolBox.addChild(s3School,s3SchoolCloud,s3Cover,this.s3TextCoverBox)
+      this.s3FirstText=new PIXI.Container();
+      var s3TextData=[60,230,280,280,180]
+      for(var i=0;i<5;i++){
+         var s3TextBox=new PIXI.Container();
+         var s3BoxBg=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"text/bg.png"].texture)
+         s3BoxBg.position.set(-1625,157)
+         var s3FT=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"3/"+i+".png"].texture)
+         s3FT.position.set(122+s3TextData[i],0)
+         s3TextBox.addChild(s3BoxBg,s3FT)
+         s3TextBox.position.set(0,this.viewHeight-160*(i+2))
+         this.s3FirstText.addChild(s3TextBox)
+      }
+      this.s3HandBox=new PIXI.Container();
+      var s3Hand=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/hand.png"].texture);
+      var s3HandLine=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/line.png"].texture);
+      s3Hand.position.set(400,8)
+      new TWEEN.Tween(s3Hand.position)
+         .to({x:2},1500)
+         .easing(TWEEN.Easing.Quadratic.Out)
+         .delay(200)
+         .repeat(Infinity)
+         .start();
+      var s3ArrowText=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/slide_right.png"].texture);
+      s3ArrowText.position.set(166,80)
+      this.s3HandBox.addChild(s3HandLine,s3Hand,s3ArrowText)
+      this.s3HandBox.position.set(204,620)
+      s3Container.addChild(this.s3SchoolBox,this.s3Text, this.schoolAni,this.s3FirstText,this.s3HandBox)
+      //s3Container.addChild(this.schoolAni);
    }
 
    bindEvent(){
@@ -511,6 +580,15 @@ class Potter{
             }
          }
          if(top >= 4000-this.viewHeight && left <= 300){
+            for(var i=0;i<this.s3FirstText.children.length;i++){
+               this.s3FirstText.children[i].alpha=(600-(top-(4000-this.viewHeight)-i*160))/600
+            }
+            if(top>4000){
+               this.s3FirstText.visible=false;
+            }
+            else{
+               this.s3FirstText.visible=true;
+            }
             s3Container.position.y = top;
             var step = 10;
             var index = parseInt((top-4000)/step);
@@ -528,6 +606,10 @@ class Potter{
             this.schoolAni.visible=true;
             this.schoolAni.gotoAndStop(0)
             s3Container.position.y=4000;
+         }
+         if(top<nowHeight && left< 100){
+            this.forbidLeft(0,left)
+            this.s3HandBox.visible=false;
          }
       }
       this.scroller = new Scroller(scrollFun, {
