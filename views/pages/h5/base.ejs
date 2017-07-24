@@ -1,0 +1,12 @@
+<% layout('/partials/layout.ejs') -%>
+<% block('page_title', 'threejs') -%>
+<% block('page_js', '/scripts/pages/h5/base/base.js') -%>
+<div>
+   <div class="js-operation">
+      <span class="js-addCube">addCube</span>
+      <span class="js-removeCube">removeCube</span>
+      <span class="js-changeNear">changeNear</span>
+      <span class="js-changeFar">changeFar</span>
+   </div>
+   <div id="WebGL-output"></div>
+</div>

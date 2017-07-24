@@ -7,6 +7,7 @@ var pixiGift = require('./pages/pixiGift');
 var pixiChaopao = require('./pages/pixiChaopao');
 
 //活动
+var base = require('./pages/h5/base');//threejs基础
 var potter = require('./pages/h5/potter');//哈利波特
 var collada = require('./pages/h5/collada');//灌篮高手
 var twentyth = require('./pages/h5/20th');//20周年
@@ -21,6 +22,7 @@ module.exports = function(app) {
     app.use('/pixiChaopao', pixiChaopao);
 
    //活动router
+   app.use('/base', base);
    app.use('/collada', collada);
    app.use('/20th', twentyth);
    app.use('/whs', whs);
