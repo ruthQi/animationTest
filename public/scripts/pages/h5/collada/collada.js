@@ -1,4 +1,6 @@
 /*
+http://techbrood.com/threejs/docs/#参考手册/动画(Animation)/关键帧动画(KeyFrameAnimation)
+
 collada + KeyFrameAnimation
 
 使用THREE.ColladaLoader实现动画的过程：
