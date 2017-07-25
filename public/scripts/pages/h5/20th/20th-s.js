@@ -227,7 +227,7 @@ class create20th{
          onComplete: () => {
             this.drawSnow();
          },
-         ease: Power1.easeIn
+         ease: Power1.easeIn//ease:缓动：非匀速的线性运动
       }).to($snow, 2, {
          opacity: 1
       }).to($title, 1, {

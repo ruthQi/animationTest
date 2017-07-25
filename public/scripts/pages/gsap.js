@@ -65,13 +65,19 @@ class initFun{
          this.max.timeScale(3);//动画变为3倍速
       });
    }
+   //Power2.easeIn：慢-快
+   //Power2.easeOut：快-慢
+   //Power2.easeInOut：慢-快-慢
+   //Back.easeIn: 回-下
+   //Back.easeOut 下-回
+   //Back.easeInOut 回-下-回
    init2(){
       //x表示translateX
       TweenLite.to('#ball1', 2, {
          x:200,
          y: '+=300px',
          delay: 2,
-         ease: Linear.easeNone
+         ease: Back.easeInOut //Linear.easeNone
 
       });
       //clearProps清除样式
@@ -91,13 +97,13 @@ class initFun{
          x: 300,
          y: 300
       });
-      this.setStyle();
-      /*this.setNoStyle();
+      //this.setStyle();
+      this.setNoStyle();
       var t1 = new TimelineLite();
       t1.staggerFrom(['#ball4', '#ball5', '#ball6', '#ball7'], 1, {
          scale: '-=0.5',
          autoAlpha: 0
-      })*/
+      })
    }
    setNoStyle(){
       var t1 = new TimelineLite();

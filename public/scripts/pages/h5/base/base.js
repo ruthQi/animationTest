@@ -4,6 +4,7 @@
 也有机会显示几何体的线框
 */
 var $ = require('libs/jquery.js');
+//npm install three
 var Three = require('three');
 
 
@@ -27,16 +28,19 @@ class MeshBasicMaterial{
       this.renderer = new Three.WebGLRenderer();
       this.renderer.setClearColor(new Three.Color(0x00000, 1.0));
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-      this.renderer.shadowMapEnabled = true;
+      //this.renderer.shadowMapEnabled = true;
       //灯光
-      this.ambientLight = new Three.AmbientLight(0x0c0c0c);
-      this.scene.add(this.ambientLight);
+      //环境光
+      /*this.ambientLight = new Three.AmbientLight(0x0c0c0c);
+      this.scene.add(this.ambientLight);*/
+      //聚光灯光源
       this.spotLight = new Three.SpotLight(0xffffff);
       this.spotLight.position.set(-40, 60, -10);
-      this.spotLight.castShadow = true;
+      //this.spotLight.castShadow = true;//是否需要阴影
       this.scene.add(this.spotLight);
       //添加场景到渲染器
       $('#WebGL-output').append(this.renderer.domElement);
+      //this.renderer.render(this.scene, this.camera);
       this.render();
       this.bindEvent();
    }
@@ -65,7 +69,7 @@ class MeshBasicMaterial{
       var cube = new Three.SceneUtils.createMultiMaterialObject(cubeGeom, [colorMaterial, cubeMaterial]);
       cube.children[1].scale.set(0.99, 0.99, 0.99);*/
       //-----------混合材质结束
-      cube.castShadow = true;
+      //cube.castShadow = true;
       cube.position.x = -60 + Math.round(Math.random() * 100);
       cube.position.y = Math.round(Math.random() * 10);
       cube.position.z = -100 + Math.round(Math.random() * 150);

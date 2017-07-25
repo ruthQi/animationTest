@@ -6,7 +6,11 @@ collada + KeyFrameAnimation
 2.创建场景，load xml(js)文件,将文件的动作转化为KeyFrameAnimation动画
 3.监听动作事件更新动画
 注：更新动画的原理：
-benchmarkAnimation：collada生成的对象的属性；
+benchmarkAnimation：设置为animation动画长度最长的一个；
+滑动时，获取鼠标的相对位移，计算当前的时间，给benchmarkAnimation执行update,更新benchmarkAnimation的currentTime;
+遍历所有的动画，如果当前的时间小于动画的数据长度，设置当前动画的currentTime为此时间，进行update,
+只有关键帧的time比currentTime小的时候，进行更新动画。
+
 获取当前所处的时间，计算更新的参数，进行更新，注意，这里更新时要去设置timeScale,否则会根据默认的timeScale去更新。默认timeScale为0.0001
 这样也就通过程序控制了xml文件的动画更新
 var current = currentChapter.benchmarkAnimation.currentTime;
@@ -297,7 +301,7 @@ function getParam(progress) {
       }
       return progress.toFixed(2) * -.01
    } else {
-      //console.log('-----', progress);
+      console.log('-----', progress);
       if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
          return progress.toFixed(2) * -.005
       }
@@ -310,16 +314,18 @@ function initScene(chapter, callback) {
    var longestAnimationLength = 0;
    for (var i = 0; i < chapter.kfAnimationsLength; ++i) {
       var animation = chapter.animations[i];
+      //console.log(animation)
       var kfAnimation = new THREE.KeyFrameAnimation(animation);
       kfAnimation.loop = false;
       kfAnimation.timeScale = timeScale;
       chapter.kfAnimations.push(kfAnimation);
       if (animation.length > longestAnimationLength) {
-         //console.log(kfAnimation)
+         console.log(kfAnimation)
          chapter.benchmarkAnimation = kfAnimation;
          longestAnimationLength = animation.length
       }
    }
+   console.log(chapter.kfAnimations)
    scene.add(chapter.model);
    var light = new THREE.AmbientLight(16777215);
    light.name = "scene-ambient-light";
@@ -375,13 +381,18 @@ function climp(n, min, max) {
 }
 function update(deltaY) {
    if (Math.abs(deltaY) > 10) return;
+   //console.log(currentChapter.benchmarkAnimation)
    var current = currentChapter.benchmarkAnimation.currentTime;
+   console.log(current)
    var length = currentChapter.benchmarkAnimation.data.length;
    var deltaFrameTime = 0;
    var deltaFrameTime = climp(deltaY, 0 - current, currentChapter.benchmarkAnimation.data.length - current);
    currentChapter.benchmarkAnimation.update(deltaFrameTime);
+   console.log(deltaFrameTime)
    for (var i = 0; i < currentChapter.kfAnimationsLength; ++i) {
+      console.log('++++++++++++++++++++++++',current);
       if (current < currentChapter.kfAnimations[i].data.length) {
+         console.log('==========================',currentChapter.kfAnimations[i].currentTime)
          currentChapter.kfAnimations[i].currentTime = currentChapter.benchmarkAnimation.currentTime;
          currentChapter.kfAnimations[i].update(0)
       }
@@ -416,6 +427,7 @@ function bindEventListeners() {
    $(scrollSensor).momentus({
       onChange: function(coords) {
          stopAnimation();
+         console.log(coords)
          var progress = coords.y - lastTimestamp;
          var param = getParam(progress);
          update(param);
