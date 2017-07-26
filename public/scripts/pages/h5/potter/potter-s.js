@@ -1,12 +1,25 @@
+/*
+PIXI:2D渲染引擎
+创建render渲染器
+创建container
+render添加到dom元素中
+创建图片精灵
+精灵添加到container
+container添加到render中
+渲染render
+*/
 var PIXI = require('pixi.js');
-let s1Container, s2Container, s3Container;
+let s1Container, s2Container, s3Container, s3TextCoverBox;
 class Potter{
    constructor(){
       this.dvalue = 0;
       this.lastY = 0;
+      this.isCanSlideTop = true;
+      this.isShowS3Arrow=false;
+      this.isShowS3Cover = false;
       this.viewWidth = window.innerWidth;
       this.viewHeight = window.innerHeight;
-      this.container = new PIXI.Container();//stage
+      this.container = new PIXI.Container();//舞台
       this.loader = PIXI.loader;
       this.srcPerfix = '/images/potter/';
       this.init();
@@ -17,7 +30,7 @@ class Potter{
       this.initScroller();
    }
    initView(){
-      this.canvasRender1 = new PIXI.CanvasRenderer(this.viewWidth, this.viewHeight);
+      this.canvasRender1 = new PIXI.CanvasRenderer(this.viewWidth, this.viewHeight);//画布
       this.canvasRender2 = new PIXI.CanvasRenderer(this.viewWidth, this.viewHeight, {
          transparent: true
       });
@@ -214,14 +227,15 @@ class Potter{
             .load(()=>{
                this.loadFirstPage();
             });
+      //画布追加到dom元素中
       document.querySelector('.potter_content').appendChild(this.canvasRender1.view);
       //document.querySelector('.potter_content').appendChild(this.canvasRender2.view);
-      this.canvasRender2.rootContext.lineJoin = "round";
+      /*this.canvasRender2.rootContext.lineJoin = "round";
       this.canvasRender2.rootContext.lineCap = "round";
       this.canvasRender1.rootContext.lineJoin = "round";
       this.canvasRender1.rootContext.lineCap = "round";
       this.canvasRender2.rootContext.shadowBlur = 20;
-      this.canvasRender2.rootContext.shadowColor = "#ea494d";
+      this.canvasRender2.rootContext.shadowColor = "#ea494d";*/
    }
    loadFirstPage(){
       this.container.width = this.viewWidth * 20;
@@ -234,13 +248,13 @@ class Potter{
       //s3
       this.fillSchool();
 
-      this.mainScene.addChild(s1Container, s2Container, s3Container);
+      this.mainScene.addChild(s1Container, s3Container, s2Container);//必须s3在s2前追加
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
       this.scroller.setDimensions(this.viewWidth,this.viewHeight,12000,12000);
       this.scroller.scrollTo(0,0,false);
-      this.canvasRender1.render(this.container);
+      //this.canvasRender1.render(this.container);
       this.updateLoop();
    }
    renderLogo(){
@@ -254,7 +268,7 @@ class Potter{
       rectLogo.beginFill(16776174);
       rectLogo.drawRect(0, 0, 20 * this.viewWidth, 12e3);
       rectLogo.endFill();
-      this.container.addChild(rectLogo);
+      //this.container.addChild(rectLogo);
       s1Container.addChild(rectLogo);
       //s1图片
       let containerInner = new PIXI.Container();
@@ -372,6 +386,7 @@ class Potter{
       s2Container.addChild(rectCanvas);
       for(var i = 0; i < textArray.length; i++){
          let itemContainer = new PIXI.Container();
+         //精灵：通过材质创建，或者通过图片直接创建
          let bg = new PIXI.Sprite(this.loader.resources[this.srcPerfix+'text/bg.png'].texture);
          bg.position.set(-1625, 157);
          itemContainer.addChild(bg);
@@ -424,14 +439,17 @@ class Potter{
       this.s3SchoolBox = new PIXI.Container();
       var s3School=new PIXI.Container();
       s3School.position.set(87,196);
+      //天空
       this.s3Sky=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/sky.jpg"].texture);
       this.s3Sky.pivot.set(288,151)
-      this.s3Sky.position.set(288,151)
+      this.s3Sky.position.set(288,151);
+      //school
       var s3SchoolMain=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/school.png"].texture);
       var s3SchoolRect=new PIXI.Graphics();
       s3SchoolRect.drawRect(0,0, 558,406);
       s3SchoolRect.endFill();
       s3School.mask=s3SchoolRect;
+      //船
       var s3Boats=new PIXI.Container();
       var boatPosition=[{x:114,y:295,flag:1,flagValue:9},{x:236,y:301,flag:-1,flagValue:10},{x:301,y:304,flag:1,flagValue:7},{x:367,y:303,flag:-1,flagValue:8},{x:462,y:301,flag:1,flagValue:6}]
       for(var i=0;i<5;i++){
@@ -447,6 +465,7 @@ class Potter{
             }
          }
       },60)
+      //云
       var s3SchoolCloud=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/cloud1.png"].texture);
       s3SchoolCloud.position.set(87-55,196+91)
       this.s3Text=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/text.png"].texture);
@@ -456,13 +475,13 @@ class Potter{
       this.s3Sky.mask=s3SchoolRect;
       var s3Cover=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/cover.png"].texture);
       s3Cover.position.set(41,195)
-      this.s3TextCoverBox=new PIXI.Container();
+      s3TextCoverBox=new PIXI.Container();
       this.s3TextCover=new PIXI.Sprite(this.loader.resources[this.srcPerfix+"4/text_cover.png"].texture);
       this.s3TextCover.height=this.viewHeight+100;
 
-      this.s3TextCoverBox.position.set(40,0);
-      this.s3TextCoverBox.addChild(this.s3TextCover)
-      this.s3SchoolBox.addChild(s3School,s3SchoolCloud,s3Cover,this.s3TextCoverBox)
+      s3TextCoverBox.position.set(40,0);
+      s3TextCoverBox.addChild(this.s3TextCover)
+      this.s3SchoolBox.addChild(s3School,s3SchoolCloud,s3Cover,s3TextCoverBox)
       this.s3FirstText=new PIXI.Container();
       var s3TextData=[60,230,280,280,180]
       for(var i=0;i<5;i++){
@@ -489,8 +508,8 @@ class Potter{
       s3ArrowText.position.set(166,80)
       this.s3HandBox.addChild(s3HandLine,s3Hand,s3ArrowText)
       this.s3HandBox.position.set(204,620)
-      s3Container.addChild(this.s3SchoolBox,this.s3Text, this.schoolAni,this.s3FirstText,this.s3HandBox)
-      //s3Container.addChild(this.schoolAni);
+      s3Container.addChild(this.s3SchoolBox,this.s3Text, this.schoolAni, this.s3FirstText,this.s3HandBox)
+      //s3Container.addChild(this.s3SchoolBox,this.s3FirstText);
    }
 
    bindEvent(){
@@ -580,29 +599,32 @@ class Potter{
             }
          }
          if(top >= 4000-this.viewHeight && left <= 300){
+            console.log(top)
             for(var i=0;i<this.s3FirstText.children.length;i++){
                this.s3FirstText.children[i].alpha=(600-(top-(4000-this.viewHeight)-i*160))/600
             }
             if(top>4000){
                this.s3FirstText.visible=false;
-            }
-            else{
+            }else{
                this.s3FirstText.visible=true;
             }
             s3Container.position.y = top;
             var step = 10;
             var index = parseInt((top-4000)/step);
             if(index<=49&&index>=0){
+               //console.log(index)
                this.schoolAni.visible = true;
                this.schoolAni.gotoAndStop(index);
             }
             if(top>4000+50*step){
+               console.log('000000000000000000')
                this.schoolAni.visible=false;
                this.forbidTop(4000+50*step,top)
                s3Container.position.y=4000+50*step;
                this.mainScene.position.y=-(4000+50*step);
             }
          }else if(top<4000-this.viewHeight){
+            console.log('11111111111111111111')
             this.schoolAni.visible=true;
             this.schoolAni.gotoAndStop(0)
             s3Container.position.y=4000;
@@ -610,6 +632,52 @@ class Potter{
          if(top<nowHeight && left< 100){
             this.forbidLeft(0,left)
             this.s3HandBox.visible=false;
+            if(!this.isCanSlideTop){
+               top = nowHeight;
+               this.scroller.__scrollTop=nowHeight;
+               this.mainScene.position.y=-nowHeight;
+            }
+         }else if(top >= nowHeight){
+            this.isCanSlideTop = false;
+         }
+         if(left>=0&&left<2000&&top>=nowHeight){
+            //动画播放完毕
+            if(left<441){
+               this.schoolAni.visible=false;
+               this.schoolAni.gotoAndStop(49)
+               s3Container.position.y=nowHeight;
+               this.s3SchoolBox.position.x=left;
+               this.s3HandBox.position.x=204+left;
+               this.s3Text.position.x=48+left;
+               this.s3Sky.scale.set(1+(left)/5000)
+            }else if(left>=441){
+               this.s3SchoolBox.position.x=441;
+               this.s3Text.position.x=48+441;
+            }
+            if(left<=1092){
+               s3TextCoverBox.position.x=left+40;
+            }
+            else if(left>1092){
+               s3TextCoverBox.position.x=1092+40;
+            }
+            if(left>=50&&left<=1092||left>=1880){
+               this.s3HandBox.visible=false;
+               this.isShowS3Arrow=false;
+            }else if(left<50||left>1092){
+               this.s3HandBox.visible=true;
+               if(!this.isShowS3Arrow){
+                  this.isShowS3Arrow=true;
+               }
+               if(!this.isShowS3Cover){
+                  this.isShowS3Cover=true;
+                  new TWEEN.Tween({x:-100})
+                  .to({x:40},300)
+                  .onUpdate(function(){
+                     s3TextCoverBox.position.x=this.x;
+                  })
+                  .start()
+               }
+            }
          }
       }
       this.scroller = new Scroller(scrollFun, {
@@ -624,6 +692,7 @@ class Potter{
    updateLoop(){
       TWEEN.update();
       requestAnimationFrame(()=>{this.updateLoop()});
+      //舞台添加到画布中
       this.canvasRender1.render(this.container);
    }
    forbidLeft(target,left,force){

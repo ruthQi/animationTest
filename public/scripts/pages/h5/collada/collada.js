@@ -303,7 +303,7 @@ function getParam(progress) {
       }
       return progress.toFixed(2) * -.01
    } else {
-      console.log('-----', progress);
+      //console.log('-----', progress);
       if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
          return progress.toFixed(2) * -.005
       }
@@ -368,6 +368,7 @@ function start() {
             obj.matrixWorldNeedsUpdate = true
          }
       }
+      //alert('pppppppppppppp')
       animation.play()
    }
    update(0)
@@ -381,20 +382,24 @@ function climp(n, min, max) {
       return n
    }
 }
+//核心方法
 function update(deltaY) {
    if (Math.abs(deltaY) > 10) return;
    //console.log(currentChapter.benchmarkAnimation)
+   //currentChapter.benchmarkAnimation的data.length最大
+   //currentTime是取的currentTime与data.length的最小值，
+   //所以要取最大的data.length付给benchmarkAnimation,存储当前滑动的时间
    var current = currentChapter.benchmarkAnimation.currentTime;
-   console.log(current)
+   //console.log(current)
    var length = currentChapter.benchmarkAnimation.data.length;
    var deltaFrameTime = 0;
    var deltaFrameTime = climp(deltaY, 0 - current, currentChapter.benchmarkAnimation.data.length - current);
    currentChapter.benchmarkAnimation.update(deltaFrameTime);
-   console.log(deltaFrameTime)
+   //console.log(deltaFrameTime)
    for (var i = 0; i < currentChapter.kfAnimationsLength; ++i) {
-      console.log('++++++++++++++++++++++++',current);
+      //console.log('++++++++++++++++++++++++',current);
       if (current < currentChapter.kfAnimations[i].data.length) {
-         console.log('==========================',currentChapter.kfAnimations[i].currentTime)
+         //console.log('==========================',currentChapter.kfAnimations[i].currentTime)
          currentChapter.kfAnimations[i].currentTime = currentChapter.benchmarkAnimation.currentTime;
          currentChapter.kfAnimations[i].update(0)
       }
@@ -429,7 +434,7 @@ function bindEventListeners() {
    $(scrollSensor).momentus({
       onChange: function(coords) {
          stopAnimation();
-         console.log(coords)
+         //console.log(coords)
          var progress = coords.y - lastTimestamp;
          var param = getParam(progress);
          update(param);
@@ -449,7 +454,7 @@ function loadModel(chapter, callback) {
    var modelPath = chapter.model_path;
    var texturePath = chapter.texture_path;
    var textureDict = chapter.texture_dict;
-   console.log(loader)
+   //console.log(loader)
    loader.load(modelPath, function(collada) {
       var model = collada.scene;
       chapter.animations = collada.animations;

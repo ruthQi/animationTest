@@ -131,7 +131,7 @@ THREE.KeyFrameAnimation.prototype = {
    },
 
    update: function ( delta ) {
-
+      //console.log('===============================================')
       if ( this.isPlaying === false ) return;
 
       this.currentTime += delta * this.timeScale;
@@ -165,7 +165,6 @@ THREE.KeyFrameAnimation.prototype = {
             if ( nextKey.time <= this.currentTime ) {
 
                while ( nextKey.time < this.currentTime && nextKey.index > prevKey.index ) {
-
                   prevKey = nextKey;
                   nextKey = keys[ prevKey.index + 1 ];
 
@@ -177,11 +176,12 @@ THREE.KeyFrameAnimation.prototype = {
             }
 
             if ( nextKey.time >= this.currentTime ) {
-
-               prevKey.interpolate( nextKey, this.currentTime );
+               //console.log('------------------------------------', prevKey.time, nextKey.time, this.currentTime)
+               //内延
+               prevKey.interpolate( nextKey, this.currentTime );//prevKey与this.currentTime之间的动画
 
             } else {
-
+               //console.log('rrrrrrrrrrrrrr')
                prevKey.interpolate( nextKey, nextKey.time );
 
             }
@@ -192,6 +192,7 @@ THREE.KeyFrameAnimation.prototype = {
          }
 
       }
+      //console.log('=====================================')
 
    },
 
