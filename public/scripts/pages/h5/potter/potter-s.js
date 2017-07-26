@@ -7,6 +7,15 @@ render添加到dom元素中
 精灵添加到container
 container添加到render中
 渲染render
+
+动画播放：
+通过texture生成sprite,播放时使用gotoAndPlay()播放
+通过直接加载图片生成sprite,播放时使用play()即可
+loader可以加载json文件，图片 (texture)。
+json: PIXI.Texture.fromFrame('chaopao_'+i+'.png'); PIXI.extras.AnimatedSprite(array);
+图片：this.loader.resources[this.srcPerfix+'2/rect.png'].texture; PIXI.extras.AnimatedSprite.fromImages(schoolData);
+
+
 */
 var PIXI = require('pixi.js');
 let s1Container, s2Container, s3Container, s3TextCoverBox;

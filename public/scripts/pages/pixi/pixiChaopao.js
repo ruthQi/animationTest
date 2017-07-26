@@ -47,17 +47,19 @@ class PIXIChaopao{
    init2(){
       this.app = new PIXI.Application();
       document.body.appendChild(this.app.view);
-      PIXI.loader.add('spritesheet', '/scripts/assets/chaopao.json').load(()=>{
+      PIXI.loader.add('spritesheet', 'scripts/assets/chaopao.json').load((data)=>{
+         console.log(data)
          this.handleAnimation();
       });
    }
    handleAnimation(){
       let array = [];
-      for(var i=0;i<102;i++){
+      for(var i=0;i<32;i++){
          let texture = PIXI.Texture.fromFrame('chaopao_'+i+'.png');
          array.push(texture);
       }
       var animation = new PIXI.extras.AnimatedSprite(array);
+      animation.gotoAndPlay(32);
       this.app.stage.addChild(animation);
       this.app.start();
    }
