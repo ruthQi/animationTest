@@ -407,6 +407,7 @@ class Potter{
             repeatContainer.position.y = (160 - repeat1.height) / 2;
             repeatContainer.addChild(repeat1, repeat2);
             let width=repeat2.width;
+            //缓动画，时间为ms
             new TWEEN.Tween(repeatContainer.position)
                .to({x:-width},80*width*textArray[i].speed)
                .repeat(Infinity)

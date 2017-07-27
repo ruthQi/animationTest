@@ -303,7 +303,6 @@ function getParam(progress) {
       }
       return progress.toFixed(2) * -.01
    } else {
-      //console.log('-----', progress);
       if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i)) {
          return progress.toFixed(2) * -.005
       }
@@ -389,11 +388,14 @@ function update(deltaY) {
    //currentChapter.benchmarkAnimation的data.length最大
    //currentTime是取的currentTime与data.length的最小值，
    //所以要取最大的data.length付给benchmarkAnimation,存储当前滑动的时间
+   //console.log('-----', deltaY);
+   
    var current = currentChapter.benchmarkAnimation.currentTime;
    //console.log(current)
    var length = currentChapter.benchmarkAnimation.data.length;
    var deltaFrameTime = 0;
    var deltaFrameTime = climp(deltaY, 0 - current, currentChapter.benchmarkAnimation.data.length - current);
+   //console.log('=======', deltaFrameTime);
    currentChapter.benchmarkAnimation.update(deltaFrameTime);
    //console.log(deltaFrameTime)
    for (var i = 0; i < currentChapter.kfAnimationsLength; ++i) {

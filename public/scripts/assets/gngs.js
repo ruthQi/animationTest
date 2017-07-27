@@ -869,12 +869,14 @@
          <instance_effect url="#ID140"/>
       </material>
    </library_materials>
+   //几何数据
    <library_geometries>
       <geometry id="ID145">
          <mesh>
             <source id="ID146">
                <float_array id="ID147" count="12" digits="2490374">-620.89 0 153.37 620.89 0 153.37 -620.89 0 -153.37 620.89 0 -153.37</float_array>
                <technique_common>
+                  //有4组，每组3个值
                   <accessor count="4" source="#ID147" stride="3">
                      <param name="X" type="float"/>
                      <param name="Y" type="float"/>
@@ -892,6 +894,7 @@
                   </accessor>
                </technique_common>
             </source>
+            //如果存放的是纹理贴图坐标的话，就是S,T,P
             <source id="ID150">
                <float_array id="ID151" count="8" digits="2490374">0 0 0 1 1 1 1 0</float_array>
                <technique_common>
@@ -905,9 +908,9 @@
                <input semantic="POSITION" source="#ID146"/>
             </vertices>
             <polylist count="1" material="Material1">
-               <input offset="0" semantic="VERTEX" source="#ID152" set="0"/>
-               <input offset="1" semantic="NORMAL" source="#ID148" set="0"/>
-               <input offset="2" semantic="TEXCOORD" source="#ID150" set="0"/>
+               <input offset="0" semantic="VERTEX" source="#ID152" set="0"/>//顶点的位置
+               <input offset="1" semantic="NORMAL" source="#ID148" set="0"/>//法线
+               <input offset="2" semantic="TEXCOORD" source="#ID150" set="0"/>//纹理映射坐标
                <vcount>4</vcount>
                <p>1 0 3 3 0 2 2 0 1 0 0 0</p>
             </polylist>
@@ -3036,6 +3039,24 @@
       </camera>
    </library_cameras>
    <library_animations>
+   /*
+      当我们读取这一堆<source>时，我们看到<sampler>下属性”semantic”为"INPUT"的<input>
+      子结点所引用的<source>结点，其子结点<technique_common>下的子结点<accessor>下的子节点
+      <param>的名字为”TIME”，简单来说这个source包含了动画的一系列类型为浮点型的时间信息。
+      而<sampler>下属性”semantic”为"OUTPUT"的<input>子结点所引用的<source>结点，
+      其子结点<technique_common>下的子结点<accessor>下的子节点
+      <param>的名字为” TRANSFORM”。这说明了这个source所包含的一系列浮点型的值为X坐标变换，
+      这些变换的值与上面读取的时间相对应。
+      （为什么是X坐标的变换呢，因为<channel>中指明了是关于X轴的变换，它所属的一系列数据自然也是同样的意义了）
+       <sampler>下属性”semantic”为"INTERPOLATION"的<input>子结点所引用的<source>结点，
+       其子结点<technique_common>下的子结点<accessor>下的子节点<param>的名字为”INTERPOLATION”。
+       这个source以字符串的方式说明了前面我们读取的OUPUT中的值所应采取的插值方式
+       （在Max中它的插值方式通常都是”LINERA”（线性插值），所以我们可以不读这个source而直接默认全部采用线性插值）。
+       最后一个source（注：就是插值的那个）是什么意思呢，比如对应两个时间点，我们可以相应的从OUTPUT中取出两个值。
+       那么如果这个时间正好落在这两个时间点之间呢，我们怎么做它的动画？于是我们通过插值来得到那个中间时间的OUTPUT值。如之前所说的，我们可以用简单的线性插值来实现。
+       你所看到的名为TIME的source，实际上是动画的关键帧。OUTPUT中所对应的数据，就是关键帧的数据。
+       具体来说在这里就是控制实体的X坐标变换的关键帧数据了。
+   */
       <animation>
          <animation>
             <source id="ID181">

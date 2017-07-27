@@ -1,7 +1,13 @@
 var THREE = require('libs/three.min.js');
 import {TimelineLite} from 'gsap';
 require('libs/OBJLoader.js');
-
+/*
+TweenLite：针对任何对象的处理动画的核心引擎。
+TweenMax：它像是TweenLite的哥哥，它可以实现TweenLite的功能，以及一些非必要功能，如repeat、yoyo、updateTo()等。它会自动激活插件。
+TimelineLite：一个非常强大轻量序列的动画工具，它扮演一个动画容器的角色，使用它能够更方便的管理时间和相关动画。
+TimelineMax：TimelineLite的扩展，除了TimelineLite的功能外还包括一些非必要功能，如repeat、repeatDelay、yoyo、currentLabel()还有更多功能。
+另外还有像缓动工具，运动路径，插件，块工具及其他更多。
+*/
 class create20th{
    constructor(){
       this.srcPerfix = "https://img4.cache.netease.com/f2e/wap/demo/xzh5test/src";
