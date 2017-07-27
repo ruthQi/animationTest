@@ -1,3 +1,4 @@
+//http://news.163.com/special/fdh5_harrypotter20_1/?587439=&spsw=4&spssid=215e217675e5702aed710b4d1e8f51e3&from=timeline&isappinstalled=0
 /*
 PIXI:2D渲染引擎
 创建render渲染器

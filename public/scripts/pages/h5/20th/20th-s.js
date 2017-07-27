@@ -1,3 +1,5 @@
+//https://3g.163.com/wap/special/the_20th_of_netease/?from=timeline
+
 var THREE = require('libs/three.min.js');
 import {TimelineLite} from 'gsap';
 require('libs/OBJLoader.js');
