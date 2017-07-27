@@ -77,8 +77,10 @@ class create20th{
       this.camera.position.set(200, -200, 2e3);
       this.scene.add(this.camera);
       //灯光
+      //环境光，添加到整个场景和所有对象的当前颜色上
       let light = new THREE.AmbientLight(13421772);
       this.scene.add(light);
+      //方向光，发出的光线是平行的
       let directLight = new THREE.DirectionalLight(16777215);
       directLight.position.set(200, 50, 200);
       this.scene.add(directLight);

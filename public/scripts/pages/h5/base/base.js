@@ -18,7 +18,7 @@ class MeshBasicMaterial{
       this.scene = new Three.Scene();
       //此属性保证场景中的所有物体都会使用该材质(使用混合材质时此属性不用设置)
       //this.scene.overrideMaterial = new Three.MeshDepthMaterial();
-      //创建相机
+      //创建相机(角度，长宽比，近面，远面)
       this.camera = new Three.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 10, 130);
       this.camera.position.x = -50;
       this.camera.position.y = 40;
