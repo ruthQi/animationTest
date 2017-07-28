@@ -95,14 +95,19 @@ class create20th{
       container.appendChild(this.webGLRender.domElement);
       //加载器
       let loaderManager = new THREE.LoadingManager;
+      //几何体
       let objLoader = new THREE.OBJLoader(loaderManager);
       objLoader.load('https://img2.cache.netease.com/f2e/wap/demo/xz/nian.js', (jsonObj)=>{
          let basicMaterial = new THREE.LineBasicMaterial({
             color: 12303291,
             linewidth: 1,
-            linecap: "round",
-            linejoin: "round"
+            linecap: "round",//线条2段的外观
+            linejoin: "round"//线条连接点的外观
          });
+         //MeshBasicMaterial：对光照无感，给几何体一种简单的颜色或显示线框
+         //MeshLambertMaterial：这种材质对光照有反应，用于创建暗淡的不发光的物体
+         //MeshPhongMaterial：这种材质对光照也有反应，用于创建金属类明亮的物体
+         //这种材质对光照有反应，用于创建暗淡的不发光的物体
          let meshMaterial = new THREE.MeshLambertMaterial({
             color: 16777215
          });
@@ -259,6 +264,7 @@ class create20th{
       let height = this.snowHeight = canvas.height = 500;
       let draw = function(){
          this.draw = () => {
+            //创建圆形渐变对象：开始x,开始y,开始半径，结束x,结束y,结束半径
             this.g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.sz), 
             this.g.addColorStop(0, "hsla(255,255%,255%,1)"), 
             this.g.addColorStop(1, "hsla(255,255%,255%,0)"), 

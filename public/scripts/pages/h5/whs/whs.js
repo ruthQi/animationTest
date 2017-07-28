@@ -1,3 +1,6 @@
+/*
+基于threejs技术的现代WebGL引擎
+*/
 import * as WHS from 'whs';
 import * as Three from 'three';
 console.log(WHS)

@@ -28,6 +28,8 @@ for (var i = 0; i < currentChapter.kfAnimationsLength; ++i) {
 }
 startAnimation();
 renderer.render(currentChapter.scene, currentChapter.camera)
+
+library_aniamtion--library_scene--library_materials--library_effects--library_images
 */
 
 var jQuery = require('libs/jquery.js');
@@ -458,6 +460,7 @@ function loadModel(chapter, callback) {
    var textureDict = chapter.texture_dict;
    //console.log(loader)
    loader.load(modelPath, function(collada) {
+      console.log(collada)
       var model = collada.scene;
       chapter.animations = collada.animations;
       chapter.kfAnimationsLength = collada.animations.length;
