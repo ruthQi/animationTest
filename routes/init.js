@@ -15,6 +15,7 @@ var collada = require('./pages/h5/collada');//灌篮高手 threejs
 var twentyth = require('./pages/h5/20th');//20周年 gsap
 var whs = require('./pages/h5/whs');//新版threejs
 var simple = require('./pages/h5/simple');
+var miss = require('./pages/h5/miss');
 
 module.exports = function(app) {
     app.use('/', gsap);
@@ -32,5 +33,6 @@ module.exports = function(app) {
    app.use('/20th', twentyth);
    app.use('/whs', whs);
    app.use('/potter', potter);
+   app.use('/miss', miss);
 
 };
