@@ -1463,22 +1463,23 @@ class MissAnimation {
             }
          }
       }
+      //scene7
       if(top >= 23400 && top < 29060 - this.viewHeight){
          for(var i=0; i< this.s7Container.children.length; i++){
             let item = this.s7Container.children[i];
-            let translateX = 0;
-            let translateY = 0;
+            
+            
             if(item.data.speed){
                let dValue = top - this.s7Container.position.y - item.data.position.y;
                if(item.data.speed.x){
-                  
+                  let translateX = 0;
                   if(item.data.translate){
                      translateX = item.data.translate.x;
                   }
                   item.position.x = item.data.position.x + item.data.speed.x * dValue + translateX;
                }
                if(item.data.speed.y){
-                  
+                  let translateY = 0;
                   if(item.data.translate){
                      translateY = item.data.translate.y;
                   }
@@ -1488,7 +1489,7 @@ class MissAnimation {
                   if(top >= 25400){
                      item.children[2].visible = true;
                      item.children[1].visible = false;
-                     item.position.set(item.data.position.x + item.data.speed.x * -339 + translateX, item.data.position.y + item.data.speed.y * -339 + translateY);
+                     item.position.set(item.data.position.x + item.data.speed.x * -339, item.data.position.y + item.data.speed.y * -339);
                   }else{
                      item.children[1].visible = true;
                      item.children[2].visible = false;
@@ -1513,6 +1514,7 @@ class MissAnimation {
             }
          }
       }
+      //文字
       if(top > 29060 - this.viewHeight){
          var dValue = top - (29060 - this.viewHeight);
          this.mainScene.position.y = -top + dValue;
@@ -1755,8 +1757,13 @@ class MissAnimation {
             let bikeInner = new PIXI.Sprite(this.loader.resources[this.imgSrc+'bike/inner.png'].texture);
             bikeInner.position.set(25, 135);
             let bikeW1 = new PIXI.Sprite(this.loader.resources[this.imgSrc+'bike/wheel1.png'].texture);
+            bikeW1.pivot.set(38.5, 39.5);
             bikeW1.position.set(38.5, 214.5);
             let bikeW2 = new PIXI.Sprite(this.loader.resources[this.imgSrc+'bike/wheel2.png'].texture);
+            //The pivot point of the displayObject that it rotates around
+            //需要rotate的需要添加这个属性位置
+            bikeW2.pivot.set(38.5, 39.5);
+            //The coordinate of the object relative to the local coordinates of the parent
             bikeW2.position.set(157.5, 171.5);
             let bikeOuter = new PIXI.Sprite(this.loader.resources[this.imgSrc+'bike/outer.png'].texture);
             bikeOuter.position.set(8, 0);
