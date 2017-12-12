@@ -1,0 +1,52 @@
+{"frames": {
+
+"ocean_1.png":
+{
+	"frame": {"x":1,"y":707,"w":1217,"h":610},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":0,"w":1217,"h":610},
+	"sourceSize": {"w":1250,"h":610}
+},
+"ocean_2.png":
+{
+	"frame": {"x":1,"y":96,"w":1209,"h":609},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":25,"y":1,"w":1209,"h":609},
+	"sourceSize": {"w":1250,"h":610}
+},
+"ripple_1.png":
+{
+	"frame": {"x":552,"y":1,"w":522,"h":93},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":522,"h":93},
+	"sourceSize": {"w":522,"h":93}
+},
+"ripple_2.png":
+{
+	"frame": {"x":310,"y":1,"w":240,"h":91},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":240,"h":91},
+	"sourceSize": {"w":240,"h":91}
+},
+"ripple_3.png":
+{
+	"frame": {"x":1,"y":1,"w":307,"h":73},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":307,"h":73},
+	"sourceSize": {"w":307,"h":73}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "ocean0.png",
+	"format": "RGBA8888",
+	"size": {"w":1219,"h":1318},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:6ce0b14ee7b4cf78a20e8898dc69e760:678cfb18feafeee953b341f655488c55:6e9bcb2b75f6fa6f045c691a62d8b104$"
+}
+}

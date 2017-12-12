@@ -1,0 +1,60 @@
+{"frames": {
+
+"chairlift_back.png":
+{
+	"frame": {"x":1,"y":1,"w":1078,"h":429},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":37,"y":48,"w":1078,"h":429},
+	"sourceSize": {"w":1152,"h":477}
+},
+"chairlift_cable.png":
+{
+	"frame": {"x":1,"y":678,"w":984,"h":243},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":86,"y":106,"w":984,"h":243},
+	"sourceSize": {"w":1152,"h":477}
+},
+"chairlift_cable_back.png":
+{
+	"frame": {"x":1,"y":432,"w":984,"h":244},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":99,"y":63,"w":984,"h":244},
+	"sourceSize": {"w":1152,"h":477}
+},
+"chairlift_chair_left.png":
+{
+	"frame": {"x":1081,"y":1,"w":62,"h":123},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":62,"h":123},
+	"sourceSize": {"w":62,"h":123}
+},
+"chairlift_chair_right.png":
+{
+	"frame": {"x":1145,"y":1,"w":55,"h":111},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":55,"h":111},
+	"sourceSize": {"w":55,"h":111}
+},
+"cloud_puff.png":
+{
+	"frame": {"x":987,"y":432,"w":278,"h":151},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":278,"h":151},
+	"sourceSize": {"w":278,"h":151}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "chairlift.png",
+	"format": "RGBA8888",
+	"size": {"w":1266,"h":922},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b373f322cc1baf13783fd9481054b5f6:31b47760e43db8a3fab12b055f02a559:69b11e92ece42716252267e2478bc9b3$"
+}
+}

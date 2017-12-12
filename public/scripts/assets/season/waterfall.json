@@ -1,0 +1,52 @@
+{"frames": {
+
+"waterfall_cloud.png":
+{
+	"frame": {"x":1131,"y":1,"w":276,"h":149},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":276,"h":149},
+	"sourceSize": {"w":279,"h":155}
+},
+"waterfall_mist.png":
+{
+	"frame": {"x":1,"y":1,"w":1128,"h":400},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1128,"h":400},
+	"sourceSize": {"w":1128,"h":400}
+},
+"waterfall_ripple_1.png":
+{
+	"frame": {"x":1168,"y":152,"w":32,"h":254},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":32,"h":254},
+	"sourceSize": {"w":32,"h":254}
+},
+"waterfall_ripple_2.png":
+{
+	"frame": {"x":1131,"y":152,"w":35,"h":258},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":258},
+	"sourceSize": {"w":35,"h":258}
+},
+"waterfall_ripple_3.png":
+{
+	"frame": {"x":1202,"y":152,"w":33,"h":204},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":33,"h":204},
+	"sourceSize": {"w":33,"h":204}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "waterfall.png",
+	"format": "RGBA8888",
+	"size": {"w":1408,"h":411},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:fd4dfda4976d2d633ec87d4e7f5133f5:45755a399c5c07a85a7c7df85b8435dc:16435e90aa598f231c014ce8f0596fc7$"
+}
+}

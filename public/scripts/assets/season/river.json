@@ -1,0 +1,92 @@
+{"frames": {
+
+"brick_bridge.png":
+{
+	"frame": {"x":1213,"y":1,"w":354,"h":217},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":354,"h":217},
+	"sourceSize": {"w":354,"h":217}
+},
+"highlight_addmode_halfsize.png":
+{
+	"frame": {"x":624,"y":1,"w":587,"h":640},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":45,"w":587,"h":640},
+	"sourceSize": {"w":590,"h":692}
+},
+"lolly_bridge.png":
+{
+	"frame": {"x":1213,"y":220,"w":353,"h":246},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":353,"h":246},
+	"sourceSize": {"w":353,"h":246}
+},
+"river_tile.png":
+{
+	"frame": {"x":1568,"y":310,"w":307,"h":307},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":307,"h":307},
+	"sourceSize": {"w":307,"h":307}
+},
+"shadow_nomode_halfsize.png":
+{
+	"frame": {"x":1,"y":1,"w":621,"h":734},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":621,"h":734},
+	"sourceSize": {"w":621,"h":734}
+},
+"waterfall_lip_1.png":
+{
+	"frame": {"x":1213,"y":468,"w":221,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":7,"w":221,"h":93},
+	"sourceSize": {"w":226,"h":116}
+},
+"waterfall_lip_2.png":
+{
+	"frame": {"x":1213,"y":619,"w":222,"h":116},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":4,"y":0,"w":222,"h":116},
+	"sourceSize": {"w":226,"h":116}
+},
+"waterfall_lip_3.png":
+{
+	"frame": {"x":624,"y":643,"w":204,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":10,"y":14,"w":204,"h":90},
+	"sourceSize": {"w":226,"h":116}
+},
+"waterfall_lip_4.png":
+{
+	"frame": {"x":1437,"y":619,"w":217,"h":100},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":5,"y":9,"w":217,"h":100},
+	"sourceSize": {"w":226,"h":116}
+},
+"waterfall_tile.png":
+{
+	"frame": {"x":1569,"y":1,"w":264,"h":307},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":264,"h":307},
+	"sourceSize": {"w":307,"h":307}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "river0.png",
+	"format": "RGBA8888",
+	"size": {"w":1876,"h":736},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:da45cfe33a083b92a7485ca88edd0080:646d09eb7c8368dc183382bb256ecad0:5c5599f644b4f82118cddf12c0b8fee6$"
+}
+}
