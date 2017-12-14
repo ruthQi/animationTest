@@ -25,8 +25,10 @@ class SeasonTest{
                  .add(this.imgSrc+'rainbow.png')
                  .add(this.imgSrc+'ocean.png')
                  .add(this.imgSrc+'game.png')
+                 .add(this.imgSrc+'river_mask.png')
                  .add(this.imgSrc+'chairlift.png')
                  .add('waterfall', '/scripts/assets/season/waterfall.json')
+                 .add('river', '/scripts/assets/season/river.json')
                  .load(this.loadComplete);
    }
    loadComplete = () => {
@@ -38,6 +40,7 @@ class SeasonTest{
       //this.bgSprite.anchor.set(0.5);
       this.mainScene.addChild(this.bgSprite);
       this.renderWater();
+      this.renderRiver();
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -173,6 +176,36 @@ class SeasonTest{
       this.rippleScene.addChild(rippleSprite2);
       this.rippleScene.addChild(rippleSprite3);
    }
+//================================================================================
+   renderRiver(){
+      let riverScence = new PIXI.Container();
+      let riverMask = new PIXI.Sprite(this.loader.resources[this.imgSrc+'river_mask.png'].texture);
+      riverMask.scale.set(0.666);
+      riverMask.position.set(561,540);
+      riverScence.addChild(riverMask);
+      //tile
+      let riverTileTexure = new PIXI.Texture.from('river_tile.png');
+      //console.log(riverTileSprite, riverMask.width, riverMask.height)
+      let tileSprite = new PIXI.extras.TilingSprite(riverTileTexure, riverMask.width, riverMask.height);
+      tileSprite.position.copy(riverMask.position);
+      tileSprite.mask = riverMask;
+      tileSprite.tileScale.set(0.666);
+      tileSprite.blendMode = 1;
+      riverScence.addChildAt(tileSprite, 0);
+      //half
+      let halfSprite = new PIXI.Sprite(new PIXI.Texture.from('highlight_addmode_halfsize.png'));
+      halfSprite.scale.set(0.666);
+      halfSprite.position.set(557, 875);
+      halfSprite.blendMode = 1;
+      riverScence.addChild(halfSprite);
+      //shadow
+      let shadowSprite = new PIXI.Sprite(new PIXI.Texture.from('shadow_nomode_halfsize.png'));
+      shadowSprite.scale.set(0.666);
+      shadowSprite.position.set(896, 536);
+      riverScence.addChild(shadowSprite);
+      this.mainScene.addChild(riverScence);
+   }
+  
 }
 
 new SeasonTest();
