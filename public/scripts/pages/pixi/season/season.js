@@ -26,9 +26,11 @@ class SeasonTest{
                  .add(this.imgSrc+'ocean.png')
                  .add(this.imgSrc+'game.png')
                  .add(this.imgSrc+'river_mask.png')
+                 .add(this.imgSrc+'ocean_mask.png')
                  .add(this.imgSrc+'chairlift.png')
                  .add('waterfall', '/scripts/assets/season/waterfall.json')
                  .add('river', '/scripts/assets/season/river.json')
+                 .add('ocean', '/scripts/assets/season/ocean.json')
                  .load(this.loadComplete);
    }
    loadComplete = () => {
@@ -41,6 +43,7 @@ class SeasonTest{
       this.mainScene.addChild(this.bgSprite);
       this.renderWater();
       this.renderRiver();
+      this.renderOcean();
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -179,13 +182,14 @@ class SeasonTest{
 //================================================================================
    renderRiver(){
       let riverScence = new PIXI.Container();
-      let riverMask = new PIXI.Sprite(this.loader.resources[this.imgSrc+'river_mask.png'].texture);
+      //let riverMask = new PIXI.Sprite(this.loader.resources[this.imgSrc+'river_mask.png'].texture);
+      let riverMask = new PIXI.Sprite(PIXI.Texture.from(this.imgSrc+'river_mask.png'));
       riverMask.scale.set(0.666);
       riverMask.position.set(561,540);
       riverScence.addChild(riverMask);
       //tile
       let riverTileTexure = new PIXI.Texture.from('river_tile.png');
-      //console.log(riverTileSprite, riverMask.width, riverMask.height)
+      //console.log(riverMask.width, riverMask.height)
       let tileSprite = new PIXI.extras.TilingSprite(riverTileTexure, riverMask.width, riverMask.height);
       tileSprite.position.copy(riverMask.position);
       tileSprite.mask = riverMask;
@@ -203,9 +207,83 @@ class SeasonTest{
       shadowSprite.scale.set(0.666);
       shadowSprite.position.set(896, 536);
       riverScence.addChild(shadowSprite);
+      //brick_bridge
+      let bridgeSprite = new PIXI.Sprite(new PIXI.Texture.from('brick_bridge.png'));
+      bridgeSprite.scale.set(0.333),
+      bridgeSprite.position.set(897, 899);
+      riverScence.addChild(bridgeSprite);
+      //lolly_bridge
+      let lollySprite = new PIXI.Sprite(new PIXI.Texture.from('lolly_bridge.png'));
+      lollySprite.scale.set(0.333),
+      lollySprite.position.set(1208, 610);
+      riverScence.addChild(lollySprite);
+      //waterfall-tile
+      let tileTex = new PIXI.Texture.from("waterfall_tile.png");
+      let wftileSprite = new PIXI.extras.TilingSprite(tileTex, 80, 280);
+      wftileSprite.position.set(560, 1327);
+      wftileSprite.tileScale.set(0.333);
+      wftileSprite.skew.set(0.236, 0);
+      wftileSprite.alpha = 0.3;
+      riverScence.addChildAt(wftileSprite, 0);
+      //lips
+      let lipSprite = new PIXI.extras.AnimatedSprite.fromFrames(["waterfall_lip_1.png", "waterfall_lip_2.png", "waterfall_lip_3.png", "waterfall_lip_4.png"]);
+      lipSprite.position.set(565, 1310);
+      lipSprite.scale.set(0.333);
+      lipSprite.blendMode = 1;
+      lipSprite.animationSpeed = .2;
+      lipSprite.play();
+      riverScence.addChild(lipSprite);
       this.mainScene.addChild(riverScence);
+      let num = 0
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         tileSprite.tilePosition.x = 6 * Math.sin(num);
+         tileSprite.tilePosition.y += .2;
+         wftileSprite.tilePosition.y += 2.25;
+         num += .02;
+      });
+      ticker.start();
    }
-  
+   renderOcean(){
+      let offsetScale = 0.333/0.5;
+      let oceanScene = new PIXI.Container();
+      oceanScene.scale.set(offsetScale);
+      oceanScene.position.set(1025, 915);
+      let maskSprite = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'ocean_mask.png'));
+      oceanScene.addChild(maskSprite);
+
+      let oceanMaskContainer = new PIXI.Container();
+      oceanMaskContainer.mask = maskSprite;
+      let ocean1Sprite = new PIXI.Sprite(new PIXI.Texture.from('ocean_1.png'));
+      oceanMaskContainer.addChild(ocean1Sprite);
+      let ocean2Sprite = new PIXI.Sprite(new PIXI.Texture.from('ocean_2.png'));
+      oceanMaskContainer.addChild(ocean2Sprite);
+      oceanScene.addChild(oceanMaskContainer);
+
+      let ripple1 = new PIXI.Sprite(new PIXI.Texture.from('ripple_1.png'));
+      ripple1.anchor.set(0.5);
+      ripple1.scale.set(0.5);
+      ripple1.position.set(263, 413);
+      oceanScene.addChild(ripple1);
+      let ripple2 = new PIXI.Sprite(new PIXI.Texture.from('ripple_2.png'));
+      ripple2.anchor.set(0.5);
+      ripple2.scale.set(0.5);
+      ripple2.position.set(554, 342);
+      oceanScene.addChild(ripple2);
+      let ripple3 = new PIXI.Sprite(new PIXI.Texture.from('ripple_3.png'));
+      ripple3.anchor.set(0.5);
+      ripple3.scale.set(0.5);
+      ripple3.position.set(750, 341);
+      oceanScene.addChild(ripple3);
+      let ripple4 = new PIXI.Sprite(new PIXI.Texture.from('ripple_1.png'));
+      ripple4.anchor.set(0.5);
+      ripple4.scale.set(0.24, 0.4);
+      ripple4.position.set(843, 90);
+      oceanScene.addChild(ripple4);
+
+      this.mainScene.addChild(oceanScene);
+   }
 }
 
 new SeasonTest();
