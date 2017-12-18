@@ -17,8 +17,12 @@ class SeasonTest{
    initView(){
       this.container.width = this.viewWidth;
       this.container.height = this.viewHeight;
-      this.canvasView = new PIXI.CanvasRenderer(this.viewWidth, this.viewHeight);
-      document.getElementById('seasonTest').append(this.canvasView.view);
+      //*注：*CanvasRenderer不支持PIXI.Sprite()作为mask，所以在CanvasRenderer下，使用sprite作为mask是失效的，只能使用PIXI.Graphics 
+      //For the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+      //this.canvasView = new PIXI.CanvasRenderer(this.viewWidth, this.viewHeight);
+      this.appView = new PIXI.Application(this.viewWidth, this.viewHeight);
+      //document.getElementById('seasonTest').append(this.canvasView.view);
+      document.getElementById('seasonTest').append(this.appView.view);
       this.loader.add(this.imgSrc+'map_full.jpg')
                  .add(this.imgSrc+'waterfall.png')
                  .add(this.imgSrc+'river.png')
@@ -77,7 +81,8 @@ class SeasonTest{
       TWEEN.update();
       requestAnimationFrame(()=>{this.updateLoop()});
       //舞台添加到画布中
-      this.canvasView.render(this.container);
+      //this.canvasView.render(this.container);
+      this.appView.stage.addChild(this.container);
    }
    initScroller(){
       //console.log(Scroller)
@@ -185,7 +190,8 @@ class SeasonTest{
       //let riverMask = new PIXI.Sprite(this.loader.resources[this.imgSrc+'river_mask.png'].texture);
       let riverMask = new PIXI.Sprite(PIXI.Texture.from(this.imgSrc+'river_mask.png'));
       riverMask.scale.set(0.666);
-      riverMask.position.set(561,540);
+      riverMask.position.set(563,546);
+      //riverScence.mask = riverMask;
       riverScence.addChild(riverMask);
       //tile
       let riverTileTexure = new PIXI.Texture.from('river_tile.png');
@@ -249,7 +255,7 @@ class SeasonTest{
       let offsetScale = 0.333/0.5;
       let oceanScene = new PIXI.Container();
       oceanScene.scale.set(offsetScale);
-      oceanScene.position.set(1025, 915);
+      oceanScene.position.set(1025, 920);
       let maskSprite = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'ocean_mask.png'));
       oceanScene.addChild(maskSprite);
 
@@ -259,30 +265,56 @@ class SeasonTest{
       oceanMaskContainer.addChild(ocean1Sprite);
       let ocean2Sprite = new PIXI.Sprite(new PIXI.Texture.from('ocean_2.png'));
       oceanMaskContainer.addChild(ocean2Sprite);
-      oceanScene.addChild(oceanMaskContainer);
+      
 
       let ripple1 = new PIXI.Sprite(new PIXI.Texture.from('ripple_1.png'));
       ripple1.anchor.set(0.5);
       ripple1.scale.set(0.5);
       ripple1.position.set(263, 413);
       oceanScene.addChild(ripple1);
+
       let ripple2 = new PIXI.Sprite(new PIXI.Texture.from('ripple_2.png'));
       ripple2.anchor.set(0.5);
       ripple2.scale.set(0.5);
       ripple2.position.set(554, 342);
       oceanScene.addChild(ripple2);
+
       let ripple3 = new PIXI.Sprite(new PIXI.Texture.from('ripple_3.png'));
       ripple3.anchor.set(0.5);
       ripple3.scale.set(0.5);
       ripple3.position.set(750, 341);
       oceanScene.addChild(ripple3);
+
       let ripple4 = new PIXI.Sprite(new PIXI.Texture.from('ripple_1.png'));
       ripple4.anchor.set(0.5);
       ripple4.scale.set(0.24, 0.4);
       ripple4.position.set(843, 90);
       oceanScene.addChild(ripple4);
 
+      oceanScene.addChild(oceanMaskContainer);
+      
       this.mainScene.addChild(oceanScene);
+
+      let num = 0
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         ocean1Sprite.position.x = 32 * Math.sin(8 * num);
+         ocean1Sprite.position.y = 24 * Math.sin(8 * num);
+         ocean2Sprite.alpha = .5 + Math.sin(20 * num) / 2;
+         ocean2Sprite.position.x = 32 * Math.cos(8 * num);
+         ocean2Sprite.position.y = 24 * Math.cos(8 * num);
+         ripple1.rotation = -.3 + .02 * Math.cos(20 * num);
+         ripple1.scale.y = .5 + .06 * Math.sin(20 * num);
+         ripple2.rotation = 0 + .02 * Math.cos(20 * num);
+         ripple2.scale.y = .5 + .06 * Math.sin(20 * num);
+         ripple3.rotation = 0 + .02 * Math.cos(20 * num);
+         ripple3.scale.y = .5 + .06 * Math.sin(20 * num);
+         ripple4.rotation = -1.35 + .02 * Math.cos(20 * num);
+         ripple4.scale.y = .4 + .06 * Math.sin(20 * num);
+         num += 0.0015;
+      });
+      ticker.start();
    }
 }
 
