@@ -1,5 +1,6 @@
 
 var PIXI = require('pixi.js');
+require('pixi-particles');
 class SeasonTest{
    constructor(){
       this.imgSrc = '/images/season/';
@@ -35,6 +36,7 @@ class SeasonTest{
                  .add('waterfall', '/scripts/assets/season/waterfall.json')
                  .add('river', '/scripts/assets/season/river.json')
                  .add('ocean', '/scripts/assets/season/ocean.json')
+                 .add('game', '/scripts/assets/season/game.json')
                  .load(this.loadComplete);
    }
    loadComplete = () => {
@@ -45,8 +47,9 @@ class SeasonTest{
       this.bgSprite.position.y = -400;*/
       //this.bgSprite.anchor.set(0.5);
       this.mainScene.addChild(this.bgSprite);
-      this.renderWater();
+      this.renderCloud();
       this.renderRiver();
+      this.renderWater();
       this.renderOcean();
       this.container.addChild(this.mainScene);
       this.bindEvent();
@@ -116,6 +119,7 @@ class SeasonTest{
       mistSprite.position.set(0,0);
       mistScene.addChild(mistSprite);
       waterScene.addChild(mistScene);
+
       this.cloudScene = new PIXI.Container();
       this.cloudScene.position.set(mistScene.position.x + 10, mistScene.position.y+20);
       for(var i=0; i<8; i++){
@@ -313,6 +317,86 @@ class SeasonTest{
          ripple4.rotation = -1.35 + .02 * Math.cos(20 * num);
          ripple4.scale.y = .4 + .06 * Math.sin(20 * num);
          num += 0.0015;
+      });
+      ticker.start();
+   }
+   renderCloud(){
+      //let cloudScene = new PIXI.Container();
+      let particleContainer = new PIXI.particles.ParticleContainer(200, {
+         scale: true,
+         position: true,
+         /*rotation: true,
+         uvs: true,*/
+         alpha: true
+      });
+      particleContainer.position.set(320, 1620);
+      let cloudTexure = new PIXI.Texture.fromFrame('cloud.png');
+      //let cloudSprite = new PIXI.Sprite(cloudTexure);
+      let config = {
+         alpha: {
+            start: .41,
+            end: 0
+         },
+         scale: {
+            start: .1,
+            end: 1,
+            minimumScaleMultiplier: 1
+         },
+         color: {
+            start: "#ffffff",
+            end: "#ffffff"
+         },
+         speed: {
+            start: 50,
+            end: 150
+         },
+         acceleration: {
+            x: 0,
+            y: 0
+         },
+         startRotation: {
+            min: 250,
+            max: 290
+         },
+         noRotation: !1,
+         rotationSpeed: {
+            min: 0,
+            max: 0
+         },
+         lifetime: {
+            min: .5,
+            max: 1
+         },
+         blendMode: "normal",
+         frequency: .001,
+         emitterLifetime: -1,
+         maxParticles: 200,
+         pos: {
+            x: 0,
+            y: 0
+         },
+         addAtBack: !0,
+         spawnType: "rect",
+         spawnRect: {
+            x: 150,
+            y: 0,
+            w: 300,
+            h: 10
+         }
+      }
+      //pixi-particles:https://github.com/pixijs/pixi-particles
+      let emitter = new PIXI.particles.Emitter(particleContainer, cloudTexure, config);
+      emitter.emit = true;
+      this.mainScene.addChild(particleContainer);
+
+      //let num = 0
+      let elapsed = Date.now();
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         var now = Date.now();
+         emitter.update((now - elapsed) * 0.001);
+         elapsed = now;
       });
       ticker.start();
    }
