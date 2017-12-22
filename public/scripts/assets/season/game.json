@@ -638,7 +638,7 @@
 	"image": "game.png",
 	"format": "RGBA8888",
 	"size": {"w":1522,"h":2044},
-	"scale": "1",
+	"scale": "2",
 	"smartupdate": "$TexturePacker:SmartUpdate:a1ecf0cbb8187b96226d2bfe3e681c6a:553f85ce1cdb19dc1dfe6bc44e3b4246:a0578701bd975ca1c9238c6071a626df$"
 }
 }

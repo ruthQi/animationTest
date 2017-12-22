@@ -30,6 +30,7 @@ class SeasonTest{
                  .add(this.imgSrc+'rainbow.png')
                  .add(this.imgSrc+'ocean.png')
                  .add(this.imgSrc+'game.png')
+                 .add(this.imgSrc+'game_sm.png')
                  .add(this.imgSrc+'river_mask.png')
                  .add(this.imgSrc+'ocean_mask.png')
                  .add(this.imgSrc+'chairlift.png')
@@ -37,6 +38,7 @@ class SeasonTest{
                  .add('river', '/scripts/assets/season/river.json')
                  .add('ocean', '/scripts/assets/season/ocean.json')
                  .add('game', '/scripts/assets/season/game.json')
+                 //.add('game_sm', '/scripts/assets/season/game_sm.json')
                  .load(this.loadComplete);
    }
    loadComplete = () => {
@@ -47,10 +49,13 @@ class SeasonTest{
       this.bgSprite.position.y = -400;*/
       //this.bgSprite.anchor.set(0.5);
       this.mainScene.addChild(this.bgSprite);
-      this.renderCloud();
-      this.renderRiver();
-      this.renderWater();
-      this.renderOcean();
+      this.renderCloud();//渲染底部雾气
+      this.renderRiver();//渲染底部云
+      this.renderWater();//渲染流水
+      this.renderOcean();//渲染海洋
+      this.renderFish();//渲染鱼
+      this.renderWhale();//渲染鲸鱼尾巴
+      this.renderBoat();//渲染小船
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -255,6 +260,7 @@ class SeasonTest{
       });
       ticker.start();
    }
+   //=====================================================================================================
    renderOcean(){
       let offsetScale = 0.333/0.5;
       let oceanScene = new PIXI.Container();
@@ -320,6 +326,7 @@ class SeasonTest{
       });
       ticker.start();
    }
+   //=======================================================================
    renderCloud(){
       //let cloudScene = new PIXI.Container();
       let particleContainer = new PIXI.particles.ParticleContainer(200, {
@@ -399,6 +406,101 @@ class SeasonTest{
          elapsed = now;
       });
       ticker.start();
+   }
+   //======================================================
+   renderFish(){
+      let fishScene = new PIXI.Container();
+      fishScene.scale.set(0.333/0.5);
+      fishScene.position.set(1005, 1320);
+      //若隐若现鱼
+      let orFish1 = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
+      orFish1.anchor.set(0.5);
+      orFish1.position.set(800, 40);
+      fishScene.addChild(orFish1);
+      //若隐若现鱼
+      let orFish2 = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
+      orFish2.anchor.set(0.5);
+      orFish2.position.set(840, 30);
+      fishScene.addChild(orFish2);
+      //silver-fish
+      let silverFishSprite = new PIXI.Sprite(new PIXI.Texture.from('silver_fish.png'));
+      silverFishSprite.anchor.set(0.5);
+      silverFishSprite.position.set(230, 60);
+      fishScene.addChild(silverFishSprite);
+      //orange-fish
+      let orangeFishSprite = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
+      orangeFishSprite.anchor.set(0.5);
+      orangeFishSprite.position.set(170, 60);
+      fishScene.addChild(orangeFishSprite);
+      //goldfish
+      let goldFishSprite = new PIXI.Sprite(new PIXI.Texture.from('gold_fish.png'));
+      goldFishSprite.anchor.set(0.5);
+      goldFishSprite.position.set(440, 50);
+      fishScene.addChild(goldFishSprite);
+      //jelly_fish章鱼
+      let jellyFishSprite = new PIXI.Sprite(new PIXI.Texture.from('jelly_fish.png'));
+      jellyFishSprite.anchor.set(0.5);
+      jellyFishSprite.position.set(600, 50);
+      fishScene.addChild(jellyFishSprite);
+      //水花
+      let coralSprite = new PIXI.Sprite(new PIXI.Texture.from('coral.png'));
+      coralSprite.anchor.set(0.5, 1);
+      coralSprite.position.set(790, 105);
+      //console.log(coralSprite.width, coralSprite.height);
+      fishScene.addChild(coralSprite);
+      //海星star_fish
+      let starSprite = new PIXI.Sprite(new PIXI.Texture.from('star_fish.png'));
+      starSprite.anchor.set(0.5);
+      starSprite.position.set(750, 90);
+      fishScene.addChild(starSprite);
+      //水草左
+      let weedLeftSprite = new PIXI.Sprite(new PIXI.Texture.from('weed_1.png'));
+      weedLeftSprite.anchor.set(0.5, 1);
+      weedLeftSprite.position.set(60, 110);
+      fishScene.addChild(weedLeftSprite);
+      //水草右
+      let weedRightSprite = new PIXI.Sprite(new PIXI.Texture.from('weed_2.png'));
+      weedRightSprite.anchor.set(0.5, 1);
+      weedRightSprite.position.set(1150, 110);
+      fishScene.addChild(weedRightSprite);
+      //渲染鱼群
+      let positionX = 0, positionY = 0, num = 1.2, scale = num;
+      for(var i = 0; i < 8; i++){
+         positionX += 28;
+         positionY += 16;
+         scale -= 0.2;
+         let fishSprite = new PIXI.Sprite(new PIXI.Texture.from('fish.png'));
+         fishSprite.position.set(900 + positionX, 30 + positionY);
+         fishSprite.scale.set(scale);
+         fishScene.addChild(fishSprite);
+         if(i == 2){
+            positionX = 28;
+            positionY = -16;
+            scale = num;
+         }
+         if(i == 5){
+            positionX = 56;
+            positionY = -32;
+            scale = num;
+         }
+      }
+      this.mainScene.addChild(fishScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         
+      });
+      ticker.start();
+   }
+   render8Fish(){
+
+   }
+   renderWhale(){
+
+   }
+   renderBoat(){
+
    }
 }
 
