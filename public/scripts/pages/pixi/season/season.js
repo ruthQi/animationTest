@@ -416,61 +416,72 @@ class SeasonTest{
       let orFish1 = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
       orFish1.anchor.set(0.5);
       orFish1.position.set(800, 40);
+      orFish1.originalPosition = new PIXI.Point(orFish1.position.x, orFish1.position.y);
       fishScene.addChild(orFish1);
       //若隐若现鱼
       let orFish2 = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
       orFish2.anchor.set(0.5);
       orFish2.position.set(840, 30);
+      orFish2.originalPosition = new PIXI.Point(orFish2.position.x, orFish2.position.y);
       fishScene.addChild(orFish2);
       //silver-fish
       let silverFishSprite = new PIXI.Sprite(new PIXI.Texture.from('silver_fish.png'));
       silverFishSprite.anchor.set(0.5);
       silverFishSprite.position.set(230, 60);
+      silverFishSprite.originalPosition = new PIXI.Point(silverFishSprite.position.x, silverFishSprite.position.y);
       fishScene.addChild(silverFishSprite);
       //orange-fish
       let orangeFishSprite = new PIXI.Sprite(new PIXI.Texture.from('orange_fish.png'));
       orangeFishSprite.anchor.set(0.5);
       orangeFishSprite.position.set(170, 60);
+      orangeFishSprite.originalPosition = new PIXI.Point(orangeFishSprite.position.x, orangeFishSprite.position.y);
       fishScene.addChild(orangeFishSprite);
       //goldfish
       let goldFishSprite = new PIXI.Sprite(new PIXI.Texture.from('gold_fish.png'));
       goldFishSprite.anchor.set(0.5);
       goldFishSprite.position.set(440, 50);
+      goldFishSprite.originalPosition = new PIXI.Point(goldFishSprite.position.x, goldFishSprite.position.y);
       fishScene.addChild(goldFishSprite);
       //jelly_fish章鱼
       let jellyFishSprite = new PIXI.Sprite(new PIXI.Texture.from('jelly_fish.png'));
       jellyFishSprite.anchor.set(0.5);
       jellyFishSprite.position.set(600, 50);
+      jellyFishSprite.originalPosition = new PIXI.Point(jellyFishSprite.position.x, jellyFishSprite.position.y);
       fishScene.addChild(jellyFishSprite);
       //水花
       let coralSprite = new PIXI.Sprite(new PIXI.Texture.from('coral.png'));
       coralSprite.anchor.set(0.5, 1);
       coralSprite.position.set(790, 105);
       //console.log(coralSprite.width, coralSprite.height);
+      coralSprite.originalPosition = new PIXI.Point(coralSprite.position.x, coralSprite.position.y);
       fishScene.addChild(coralSprite);
       //海星star_fish
       let starSprite = new PIXI.Sprite(new PIXI.Texture.from('star_fish.png'));
       starSprite.anchor.set(0.5);
       starSprite.position.set(750, 90);
+      starSprite.originalPosition = new PIXI.Point(starSprite.position.x, starSprite.position.y);
       fishScene.addChild(starSprite);
       //水草左
       let weedLeftSprite = new PIXI.Sprite(new PIXI.Texture.from('weed_1.png'));
       weedLeftSprite.anchor.set(0.5, 1);
       weedLeftSprite.position.set(60, 110);
+      weedLeftSprite.originalPosition = new PIXI.Point(weedLeftSprite.position.x, weedLeftSprite.position.y);
       fishScene.addChild(weedLeftSprite);
       //水草右
       let weedRightSprite = new PIXI.Sprite(new PIXI.Texture.from('weed_2.png'));
       weedRightSprite.anchor.set(0.5, 1);
       weedRightSprite.position.set(1150, 110);
+      weedRightSprite.originalPosition = new PIXI.Point(weedRightSprite.position.x, weedRightSprite.position.y);
       fishScene.addChild(weedRightSprite);
       //渲染鱼群
-      let positionX = 0, positionY = 0, num = 1.2, scale = num;
+      let positionX = 0, positionY = 0, num = 1.2, scale = num, fishArray = [];
       for(var i = 0; i < 8; i++){
          positionX += 28;
          positionY += 16;
          scale -= 0.2;
          let fishSprite = new PIXI.Sprite(new PIXI.Texture.from('fish.png'));
          fishSprite.position.set(900 + positionX, 30 + positionY);
+         fishSprite.originalPosition = new PIXI.Point(fishSprite.position.x, fishSprite.position.y);
          fishSprite.scale.set(scale);
          fishScene.addChild(fishSprite);
          if(i == 2){
@@ -483,18 +494,63 @@ class SeasonTest{
             positionY = -32;
             scale = num;
          }
+         fishArray.push(fishSprite);
       }
       this.mainScene.addChild(fishScene);
       //动画
       let ticker = new PIXI.ticker.Ticker();
       ticker.stop();
+      let num1 = 0, num2 = 0;
       ticker.add(() => {
-         
+         let maxSilverPosition = silverFishSprite.originalPosition.x + 70 * Math.cos(3 * num1);
+         silverFishSprite.scale.x = orangeFishSprite.scale.x = silverFishSprite.position.x > maxSilverPosition ? -1 : 1;
+         silverFishSprite.position.x = maxSilverPosition;
+         silverFishSprite.position.y = silverFishSprite.originalPosition.y + 6 * Math.sin(num1);
+
+         orangeFishSprite.position.x = orangeFishSprite.originalPosition.x + 60 * Math.cos(3 * num1);
+         orangeFishSprite.position.y = orangeFishSprite.originalPosition.y + 10 * Math.sin(num1);
+
+         goldFishSprite.position.x = goldFishSprite.originalPosition.x + 25 * Math.cos(num1);
+         goldFishSprite.position.y = goldFishSprite.originalPosition.y + 10 * Math.sin(num2);
+         goldFishSprite.rotation = 0.1 * Math.abs(Math.sin(num1));
+
+         jellyFishSprite.position.x = jellyFishSprite.originalPosition.x + 6 * Math.sin(num2);
+         jellyFishSprite.position.y = jellyFishSprite.originalPosition.y + 10 * Math.sin(num1);
+         jellyFishSprite.scale.y = 1 + .05 * Math.sin(2 * num2);
+         jellyFishSprite.scale.x = 1 + .05 * Math.cos(2 * num2);
+
+         weedLeftSprite.rotation = -Math.sin(num2)/20;
+         weedLeftSprite.scale.y = 0.8 + Math.sin(num2)/60;
+
+         weedRightSprite.rotation = Math.sin(num2) / 20;
+         weedRightSprite.scale.y = .8 + Math.sin(num2) / 40;
+
+         starSprite.position.x = starSprite.originalPosition.x + 4 * Math.sin(num1);
+         starSprite.rotation = Math.sin(num2)/10;
+
+         coralSprite.scale.y = 0.8 + Math.sin(num2)/40;
+
+         orFish1.position.x = orFish1.originalPosition.x + 50 * Math.cos(num1/4);
+         orFish1.position.y = orFish1.originalPosition.y + 18 * Math.sin(num1/4);
+         orFish1.scale.x = orFish1.scale.y = .8 * -Math.cos(num1 / 4);
+         orFish1.alpha = .7 * Math.abs(orFish1.scale.x);
+
+         orFish2.position.x = orFish2.originalPosition.x + 40 * Math.cos(num1/5);
+         orFish2.position.y = orFish2.originalPosition.y + 12 * Math.sin(num1/4);
+         orFish2.scale.x = orFish2.scale.y = .7 * -Math.cos(num1 / 4);
+         orFish2.alpha = .7 * Math.abs(orFish2.scale.x);
+         for(var i = 0; i < fishArray.length; i++){
+            let fishSprite = fishArray[i];
+            //let value = 0
+            let maxPosition = fishSprite.originalPosition.x + 60 * Math.sin(num2);
+            fishSprite.position.x += 0.2;//fishSprite.originalPosition.x + .2 * Math.cos(num1) ;
+            //value += 0.2;
+         }
+         num1 += 0.01;
+         num2 += 0.04;
+
       });
       ticker.start();
-   }
-   render8Fish(){
-
    }
    renderWhale(){
 
