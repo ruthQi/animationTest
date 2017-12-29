@@ -56,6 +56,8 @@ class SeasonTest{
       this.renderFish();//渲染鱼
       this.renderWhale();//渲染鲸鱼尾巴
       this.renderBoat();//渲染小船
+      this.renderDuck();//渲染鸭子
+      this.renderLight();//渲染灯光
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -559,7 +561,22 @@ class SeasonTest{
       ticker.start();
    }
    renderWhale(){
-
+      let whaleScenen = new PIXI.Container();
+      whaleScenen.position.set(1700, 1125);
+      let whaleSprite = new PIXI.Sprite(PIXI.Texture.from('whale_tail.png'));
+      whaleSprite.scale.set(0.666);
+      whaleScenen.addChild(whaleSprite);
+      this.mainScene.addChild(whaleScenen);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0;
+      ticker.add(() => {
+         whaleSprite.position.x = 5 * Math.cos(num1);
+         whaleSprite.position.y = 10 * Math.sin(num1);
+         num1 += 0.02;
+      });
+      ticker.start();
    }
    renderBoat(){
       let boatScene = new PIXI.Container();
@@ -576,6 +593,97 @@ class SeasonTest{
          boatSprite.position.x = 40 * Math.sin(num1);
          boatSprite.rotation = 0.015 * Math.cos(10 * num1);
          num1 += 0.005;
+      });
+      ticker.start();
+   }
+   renderDuck(){
+      let duckScene = new PIXI.Container();
+      duckScene.position.set(1450, 1125);
+      let rect1 = new PIXI.Rectangle(30, 80, 0, 0);
+      let rect2 = new PIXI.Rectangle(180, 80, 180, 0);
+      let duckSprite1 = new PIXI.Sprite(PIXI.Texture.from('duck_1.png'));
+      let duckSprite1X = rect1.x + rect1.width/2 * Math.random();
+      let duckSprite1Y = rect1.y + rect1.height/2 * Math.random();
+      duckScene.addChild(duckSprite1);
+      let duckSprite2 = new PIXI.Sprite(PIXI.Texture.from('duck_2.png'));
+      let duckSprite2X = rect2.x + rect2.width/2 * Math.random();
+      let duckSprite2Y = rect2.y + rect2.height/2 * Math.random();
+      duckScene.addChild(duckSprite2);
+      this.mainScene.addChild(duckScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0, num2 = 0;
+      ticker.add(() => {
+         duckSprite1.rotation = 0.01 * Math.cos(num1);
+         duckSprite1.position.x = duckSprite1X - 50 * Math.cos(num2);
+         duckSprite1.position.y = duckSprite1Y + 10 * Math.sin(num2);
+         duckSprite2.rotation = 0.1 * Math.cos(num1);
+         duckSprite2.position.x = duckSprite2X + 10 * Math.cos(num2);
+         duckSprite2.position.y = duckSprite2Y - 30 * Math.sin(num2);
+         num1 += 0.01;
+         num2 += 0.005;
+      });
+      ticker.start();
+   }
+   renderLight(){
+      let comfireScene = new PIXI.Container();
+      comfireScene.position.set(275, 1085);
+      /*let array = [];
+      for(var i=1;i<4;i++){
+         let texture = PIXI.Texture.fromFrame('campfire_'+i+'.png');
+         array.push(texture);
+      }
+      var animation = new PIXI.extras.AnimatedSprite(array);
+      animation.gotoAndPlay(2);
+      comfireScene.addChild(animation);*/
+      let comfireGlowSprite = new PIXI.Sprite(new PIXI.Texture.from('campfire_glow.png'));
+      comfireGlowSprite.scale.set(0.5);
+      comfireGlowSprite.position.set(20, 14);
+      comfireGlowSprite.alpha = 0.6;//透明度
+      comfireGlowSprite.blendMode = 1;
+      comfireScene.addChild(comfireGlowSprite);
+      let array = [];
+      for(var i = 1; i < 4; i++){
+         let comfireSprite = new PIXI.Sprite(new PIXI.Texture.from('campfire_'+ i +'.png'));
+         comfireSprite.position.set(6, 14);
+         comfireSprite.scale.set(0.666);
+         comfireSprite.visible = false;
+         comfireScene.addChild(comfireSprite);
+         array.push(comfireSprite);
+      }
+      /*let comfireSprite1 = new PIXI.Sprite(new PIXI.Texture.from('campfire_1.png'));
+      comfireSprite1.position.set(6, 14);
+      comfireSprite1.scale.set(0.666);
+      comfireScene.addChild(comfireSprite1);
+      let comfireSprite2 = new PIXI.Sprite(new PIXI.Texture.from('campfire_2.png'));
+      comfireSprite2.position.set(6, 14);
+      comfireSprite2.scale.set(0.666);
+      comfireScene.addChild(comfireSprite2);
+      let comfireSprite3 = new PIXI.Sprite(new PIXI.Texture.from('campfire_3.png'));
+      comfireSprite3.position.set(6, 14);
+      comfireSprite3.scale.set(0.666);
+      comfireScene.addChild(comfireSprite3);*/
+      this.mainScene.addChild(comfireScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0, num2 = 0, iValue = 0, value = 1;
+      ticker.add(() => {
+         num1 += 0.02;
+         if(num1 > 0.2){
+            array[iValue].visible = false;
+            if(iValue + value < 0){
+               value = 1;
+            }else if(iValue + value > array.length - 1){
+               value = -1;
+            }
+            iValue += value;
+            array[iValue].visible = true;
+            num1 = 0;
+         }
+         comfireGlowSprite.alpha = 0.4 + Math.abs(Math.sin(Math.tan(1.2 * Math.cos(num2)))) * 0.2;
+         num2 += 0.05;
       });
       ticker.start();
    }
