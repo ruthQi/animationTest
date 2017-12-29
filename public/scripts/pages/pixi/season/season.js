@@ -60,6 +60,7 @@ class SeasonTest{
       this.renderDuck();//渲染鸭子
       this.renderComfire();//渲染火光
       this.renderLight();//渲染灯光
+      this.renderSeagull();//渲染海鸥
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -720,8 +721,11 @@ class SeasonTest{
 
       });
       ticker.start();
-
       this.mainScene.addChild(lightScene);
+   }
+   //海鸥
+   renderSeagull(){
+      
    }
 }
 
