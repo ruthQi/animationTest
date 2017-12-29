@@ -481,6 +481,8 @@ class SeasonTest{
          scale -= 0.2;
          let fishSprite = new PIXI.Sprite(new PIXI.Texture.from('fish.png'));
          fishSprite.position.set(900 + positionX, 30 + positionY);
+         /*fishSprite.velocity.x = fishSprite.position.x;
+         fishSprite.velocity.y = fishSprite.position.y;*/
          fishSprite.originalPosition = new PIXI.Point(fishSprite.position.x, fishSprite.position.y);
          fishSprite.scale.set(scale);
          fishScene.addChild(fishSprite);
@@ -541,10 +543,14 @@ class SeasonTest{
          orFish2.alpha = .7 * Math.abs(orFish2.scale.x);
          for(var i = 0; i < fishArray.length; i++){
             let fishSprite = fishArray[i];
-            //let value = 0
-            let maxPosition = fishSprite.originalPosition.x + 60 * Math.sin(num2);
-            fishSprite.position.x += 0.2;//fishSprite.originalPosition.x + .2 * Math.cos(num1) ;
-            //value += 0.2;
+            let maxPosition = fishSprite.originalPosition.x + 160 * Math.sin(num1);
+            fishSprite.scale.x = fishSprite.position.x > maxPosition ? 1 : -1;
+            fishSprite.position.x = maxPosition;
+            let value = Math.cos(num2);
+            if(i > 3){
+               value = Math.sin(num2);
+            }
+            fishSprite.position.y = fishSprite.originalPosition.y + (i+2) * value;
          }
          num1 += 0.01;
          num2 += 0.04;
@@ -556,7 +562,22 @@ class SeasonTest{
 
    }
    renderBoat(){
-
+      let boatScene = new PIXI.Container();
+      boatScene.position.set(1235, 1125);
+      let boatSprite = new PIXI.Sprite(PIXI.Texture.from('boat.png'));
+      boatSprite.scale.set(0.666);
+      boatScene.addChild(boatSprite);
+      this.mainScene.addChild(boatScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0;
+      ticker.add(() => {
+         boatSprite.position.x = 40 * Math.sin(num1);
+         boatSprite.rotation = 0.015 * Math.cos(10 * num1);
+         num1 += 0.005;
+      });
+      ticker.start();
    }
 }
 
