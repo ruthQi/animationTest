@@ -1,6 +1,7 @@
 
 var PIXI = require('pixi.js');
 require('pixi-particles');
+import {TweenLite} from 'gsap';
 class SeasonTest{
    constructor(){
       this.imgSrc = '/images/season/';
@@ -57,6 +58,7 @@ class SeasonTest{
       this.renderWhale();//渲染鲸鱼尾巴
       this.renderBoat();//渲染小船
       this.renderDuck();//渲染鸭子
+      this.renderComfire();//渲染火光
       this.renderLight();//渲染灯光
       this.container.addChild(this.mainScene);
       this.bindEvent();
@@ -267,7 +269,7 @@ class SeasonTest{
       let offsetScale = 0.333/0.5;
       let oceanScene = new PIXI.Container();
       oceanScene.scale.set(offsetScale);
-      oceanScene.position.set(1025, 920);
+      oceanScene.position.set(1025, 914);
       let maskSprite = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'ocean_mask.png'));
       oceanScene.addChild(maskSprite);
 
@@ -626,7 +628,7 @@ class SeasonTest{
       });
       ticker.start();
    }
-   renderLight(){
+   renderComfire(){
       let comfireScene = new PIXI.Container();
       comfireScene.position.set(275, 1085);
       /*let array = [];
@@ -652,18 +654,6 @@ class SeasonTest{
          comfireScene.addChild(comfireSprite);
          array.push(comfireSprite);
       }
-      /*let comfireSprite1 = new PIXI.Sprite(new PIXI.Texture.from('campfire_1.png'));
-      comfireSprite1.position.set(6, 14);
-      comfireSprite1.scale.set(0.666);
-      comfireScene.addChild(comfireSprite1);
-      let comfireSprite2 = new PIXI.Sprite(new PIXI.Texture.from('campfire_2.png'));
-      comfireSprite2.position.set(6, 14);
-      comfireSprite2.scale.set(0.666);
-      comfireScene.addChild(comfireSprite2);
-      let comfireSprite3 = new PIXI.Sprite(new PIXI.Texture.from('campfire_3.png'));
-      comfireSprite3.position.set(6, 14);
-      comfireSprite3.scale.set(0.666);
-      comfireScene.addChild(comfireSprite3);*/
       this.mainScene.addChild(comfireScene);
       //动画
       let ticker = new PIXI.ticker.Ticker();
@@ -686,6 +676,52 @@ class SeasonTest{
          num2 += 0.05;
       });
       ticker.start();
+   }
+   renderLight(){
+      let array = [];
+      let lightScene = new PIXI.Container();
+      lightScene.position.set(1638, 975);
+      lightScene.scale.set(0.5);
+      let lightSprite1 = new PIXI.Sprite(new PIXI.Texture.from('light_1.png'));
+      lightScene.addChild(lightSprite1);
+      let lightSprite2 = new PIXI.Sprite(new PIXI.Texture.from('light_2.png'));
+      lightSprite2.position.set(32, 6);
+      lightSprite2.alpha = 0;
+      lightScene.addChild(lightSprite2);
+      let lightSprite3 = new PIXI.Sprite(new PIXI.Texture.from('light_3.png'));
+      lightSprite3.position.set(74, 14);
+      lightSprite3.alpha = 0;
+      lightScene.addChild(lightSprite3);
+      array.push(lightSprite1, lightSprite2, lightSprite3);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0, num2 = 0, iValue = 0, value = 1;
+      ticker.add(() => {
+         num1 += 0.02;
+         if(num1 > 0.8){
+            TweenLite.to(array[iValue], 0.4, {
+               alpha: 0,
+               ease: Power3.easeOut
+            });
+            if(iValue + value < 0){
+               value = 1;
+            }else if(iValue + value > array.length - 1){
+               value = -1;
+            }
+            iValue += value;
+            TweenLite.to(array[iValue], 0.4, {
+               alpha: 1,
+               delay: 0,
+               ease: Power3.easeOut
+            })
+            num1 = 0;
+         }
+
+      });
+      ticker.start();
+
+      this.mainScene.addChild(lightScene);
    }
 }
 
