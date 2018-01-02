@@ -61,6 +61,7 @@ class SeasonTest{
       this.renderComfire();//渲染火光
       this.renderLight();//渲染灯光
       this.renderSeagull();//渲染海鸥
+      this.renderSeagullTop();//渲染海鸥上方
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -632,14 +633,6 @@ class SeasonTest{
    renderComfire(){
       let comfireScene = new PIXI.Container();
       comfireScene.position.set(275, 1085);
-      /*let array = [];
-      for(var i=1;i<4;i++){
-         let texture = PIXI.Texture.fromFrame('campfire_'+i+'.png');
-         array.push(texture);
-      }
-      var animation = new PIXI.extras.AnimatedSprite(array);
-      animation.gotoAndPlay(2);
-      comfireScene.addChild(animation);*/
       let comfireGlowSprite = new PIXI.Sprite(new PIXI.Texture.from('campfire_glow.png'));
       comfireGlowSprite.scale.set(0.5);
       comfireGlowSprite.position.set(20, 14);
@@ -697,7 +690,7 @@ class SeasonTest{
       //动画
       let ticker = new PIXI.ticker.Ticker();
       ticker.stop();
-      let num1 = 0, num2 = 0, iValue = 0, value = 1;
+      let num1 = 0, iValue = 0, value = 1;
       ticker.add(() => {
          num1 += 0.02;
          if(num1 > 0.8){
@@ -723,9 +716,74 @@ class SeasonTest{
       ticker.start();
       this.mainScene.addChild(lightScene);
    }
+   renderSeagullTop(){
+      let seagullSmScene = new PIXI.Container();
+      seagullSmScene.position.set(830, 350);
+      seagullSmScene.scale.set(0.666);
+      let seagullSmArray = [];
+      for(var i=1;i<5;i++){
+         let texture = PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
+         seagullSmArray.push(texture);
+      }
+      var animationSM = new PIXI.extras.AnimatedSprite(seagullSmArray);
+      animationSM.animationSpeed = 0.08;
+      let numsm = Math.floor(animationSM.totalFrames * Math.random());
+      animationSM.gotoAndPlay(numsm);
+      seagullSmScene.addChild(animationSM);
+      this.mainScene.addChild(seagullSmScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0;
+      ticker.add(() => {
+         animationSM.position.x = 20 * Math.cos(num1);
+         animationSM.position.y = 10 * Math.sin(num1);
+         num1 += 0.008;
+         
+      });
+      ticker.start();
+   }
    //海鸥
    renderSeagull(){
-      
+      let seagullScene = new PIXI.Container();
+      seagullScene.position.set(1800, 950);
+      seagullScene.scale.set(0.666);
+      let seagullArray = [];
+      for(var i=1;i<6;i++){
+         let texture = PIXI.Texture.fromFrame('seagull_'+i+'.png');
+         seagullArray.push(texture);
+      }
+      var animation = new PIXI.extras.AnimatedSprite(seagullArray);
+      //animation.position.x = 20 * 
+      animation.animationSpeed = 0.08;
+      let num = Math.floor(animation.totalFrames * Math.random());
+      animation.gotoAndPlay(num);
+      seagullScene.addChild(animation);
+
+      let seagullSmArray = [];
+      for(var i=1;i<5;i++){
+         let texture = PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
+         seagullSmArray.push(texture);
+      }
+      var animationSM = new PIXI.extras.AnimatedSprite(seagullSmArray);
+      animationSM.animationSpeed = 0.08;
+      let numsm = Math.floor(animationSM.totalFrames * Math.random());
+      animationSM.gotoAndPlay(numsm);
+      seagullScene.addChild(animationSM);
+      this.mainScene.addChild(seagullScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0;
+      ticker.add(() => {
+         animation.position.x = 30 * Math.cos(num1);
+         animation.position.y = 20 * Math.sin(num1);
+         animationSM.position.x = 100 + 20 * Math.cos(num1);
+         animationSM.position.y = 100 + 10 * Math.sin(num1);
+         num1 += 0.008;
+         
+      });
+      ticker.start();
    }
 }
 
