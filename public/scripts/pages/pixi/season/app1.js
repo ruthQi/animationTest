@@ -71214,7 +71214,7 @@ function e(t, n, r) {
                return g = new u.particles.Emitter(r, [a, s], h),
                b = new u.Sprite(new u.Texture.from("balloon_flicker.png")),
                b.scale.set(.5),
-               b.position.set( - 141, -37),
+               b.position.set( - 121, -37),
                b.blendMode = u.BLEND_MODES.ADD,
                b.alpha = 0,
                x = c(.1),
@@ -71392,7 +71392,10 @@ function e(t, n, r) {
             }
             function i(t, e) {
                g += t,
-               g > .2 && (v[m].visible = !1, m + _ < 0 && (_ = 1), m + _ > v.length - 1 && (_ = -1), m += _, v[m].visible = !0, v[m].updateScale(e), g = 0);
+               g > .2 && 
+               (v[m].visible = !1, 
+                  m + _ < 0 && (_ = 1), m + _ > v.length - 1 && (_ = -1), 
+                  m += _, v[m].visible = !0, v[m].updateScale(e), g = 0);
                var r = u(h(1.2 * l(x)));
                y.alpha = d + c(r) * (f - d),
                x += .05
@@ -72292,7 +72295,8 @@ function e(t, n, r) {
             }
             function o(t) {
                l += t,
-               l > .8 && (window.TweenLite.to(h[c], .4, {
+               l > .8 && (
+                  window.TweenLite.to(h[c], .4, {
                   alpha: 0,
                   ease: u
                }), c + d < 0 && (d = 1), c + d > h.length - 1 && (d = -1), c += d, window.TweenLite.to(h[c], .4, {

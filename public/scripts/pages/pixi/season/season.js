@@ -62,6 +62,21 @@ class SeasonTest{
       this.renderLight();//渲染灯光
       this.renderSeagull();//渲染海鸥
       this.renderSeagullTop();//渲染海鸥上方
+      this.renderPinWheel();//渲染风车
+      //=================todo==================
+      this.renderBalloon();//渲染热气球
+      this.renderChairlift();//渲染热气球
+      this.renderMountainCloud();//上头上的云彩
+      this.renderFox();//渲染狐狸
+      this.renderLeaves();//渲染枫叶
+      this.renderPumpkin();//渲染南瓜
+      this.renderRainbow();//渲染彩虹
+      this.renderLineBird();//渲染小鸟
+      this.renderRocket();//渲染火箭
+      this.renderSnow();//渲染雪花
+      this.renderTarctor();//渲染拖拉机蒸汽
+      this.renderWindmill();//渲染大风车
+      //==============================================
       this.container.addChild(this.mainScene);
       this.bindEvent();
       //必须设置此属性，滚动式才好使，否则滚动不起作用
@@ -782,6 +797,308 @@ class SeasonTest{
          animationSM.position.y = 100 + 10 * Math.sin(num1);
          num1 += 0.008;
          
+      });
+      ticker.start();
+   }
+   //风车
+   renderPinWheel(){
+      let pinWheelScene = new PIXI.Container();
+      pinWheelScene.position.set(945, 1140);
+      pinWheelScene.scale.set(0.666);
+      let pinWheelSprite1 = new PIXI.Sprite(new PIXI.Texture.from('pinwheel_1.png'));
+      pinWheelSprite1.buttonMode = true;
+      pinWheelSprite1.interactive = true;
+      //需要设置anchor，否则在rotate时有问题
+      pinWheelSprite1.anchor.set(0.5);
+      let pin1Obj = {
+         sprite: pinWheelSprite1,
+         rotateSpeed: 0.03,
+         rotateSpeedTarget: 0.03,
+         counter: 0
+      }
+
+      pinWheelSprite1.on('touchstart', ()=>{
+         pin1Obj.counter = 0;
+         pin1Obj.rotateSpeedTarget = 0.5;
+      });
+      pinWheelScene.addChild(pinWheelSprite1);
+
+      let pinWheelSprite2 = new PIXI.Sprite(new PIXI.Texture.from('pinwheel_2.png'));
+      pinWheelSprite2.anchor.set(0.5);
+      pinWheelSprite2.position.set(691, -430);
+      //添加事件需要设置这两个属性
+      pinWheelSprite2.buttonMode = true;
+      pinWheelSprite2.interactive = true;
+      let pin2Obj = {
+         sprite: pinWheelSprite2,
+         rotateSpeed: 0.03,
+         rotateSpeedTarget: 0.03,
+         counter: 0
+      }
+      pinWheelSprite2.on('touchstart', ()=>{
+         pin2Obj.counter = 0;
+         pin2Obj.rotateSpeedTarget = 0.5;
+      });
+      pinWheelScene.addChild(pinWheelSprite2);
+      this.mainScene.addChild(pinWheelScene);
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      let num1 = 0;
+      ticker.add(() => {
+         this.pinWheelRotation(pin1Obj);
+         this.pinWheelRotation(pin2Obj);
+      });
+      ticker.start();
+   }
+   pinWheelRotation(pinObj){
+      let angle = (1 - Math.cos(0.1 * Math.PI)) / 2;
+      pinObj.rotateSpeed = pinObj.rotateSpeed * (1 - angle) + pinObj.rotateSpeedTarget * angle;
+      pinObj.sprite.rotation += pinObj.rotateSpeed;
+      pinObj.counter ++;
+      if(pinObj.counter > 100 && pinObj.rotateSpeedTarget !== 0.03){
+         pinObj.counter = 0;
+         pinObj.rotateSpeedTarget = 0.03;
+      }
+   }
+   renderBalloon(){
+      let ballonMainScene = new PIXI.Container();
+      ballonMainScene.position.set(1380, 360);
+      let ballonScene = new PIXI.Container();
+      ballonScene.scale.set(0.666);
+      let lightScene = new PIXI.Container();
+      ballonScene.addChild(lightScene);
+      let ballonSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon.png'));
+      ballonSprite.anchor.set(0.523, 0.128);
+      lightScene.addChild(ballonSprite);
+
+      let lightSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon_flicker.png'));
+      lightSprite.scale.set(.5);
+      lightSprite.position.set( - 81, 17);
+      lightSprite.blendMode = 1;
+      lightSprite.alpha = 0;
+      lightScene.addChild(lightSprite);
+
+      let particleContainer = new PIXI.Container();
+      particleContainer.position.set( - 9, 129);
+      let config = {
+         alpha: {
+            start: .4,
+            end: 0
+         },
+         scale: {
+            start: .2,
+            end: .02,
+            minimumScaleMultiplier: 1
+         },
+         color: {
+            start: "#ffdd33",
+            end: "#dddddd"
+         },
+         speed: {
+            start: 30,
+            end: 100
+         },
+         acceleration: {
+            x: 40,
+            y: 0
+         },
+         startRotation: {
+            min: 250,
+            max: 290
+         },
+         noRotation: false,
+         rotationSpeed: {
+            min: 0,
+            max: 0
+         },
+         lifetime: {
+            min: .5,
+            max: 1
+         },
+         blendMode: "normal",
+         frequency: .001,
+         emitterLifetime: .6,
+         maxParticles: 100,
+         pos: {
+            x: 0,
+            y: 0
+         },
+         addAtBack: true,
+         spawnType: "rect",
+         spawnRect: {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+         }
+      }
+      let cloudTexture = new PIXI.Texture.fromFrame("cloud.png");
+      let particleTexture = new PIXI.Texture.fromFrame("particle.png");
+      let emitter = new PIXI.particles.Emitter(particleContainer, [particleTexture, cloudTexture], config);
+      //emitter.emit = true;
+      lightScene.addChild(particleContainer);
+      
+
+      let lineRect = new PIXI.Graphics();
+      lineRect.beginFill(16777215, .5);
+      lineRect.drawRect(0, 0, 1.75, 1e3);
+      lineRect.endFill();
+      lineRect.position.set(-1, -lineRect.height);
+      ballonScene.addChild(lineRect);
+      ballonScene.scale.set(0.666);
+      ballonMainScene.addChild(ballonScene);
+      this.mainScene.addChild(ballonMainScene);
+
+      let elapsed = Date.now(), num1 = 0, value1 = 0, value2 = 0;
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         value1 += 0.02;
+         value2 += 0.02;
+         ballonScene.position.x = 160 * Math.cos(num1);
+         ballonScene.rotation = this.getRotation(ballonScene.position.x, -160, 160, -0.4 / 8, 0.4);
+         ballonScene.position.y = 100 * Math.sin(2 * num1);
+         ballonScene.scale.x = ballonScene.scale.y = .6 + .05 * Math.sin(2 * num1);
+         lightScene.rotation = .05 * Math.cos(20 * num1);
+         lineRect.width = 1 + 1 / 0.5;
+         var now = Date.now();
+         emitter.update((now - elapsed) * 0.001);
+         elapsed = now;
+         if(value1 == 0.1){
+            lightSprite.alpha = .3 === lightSprite.alpha ? .15 : .3;
+         }
+         if(value1 == 0.3){
+            lightSprite.alpha = 0;
+            value1 = 0;
+         }
+         if(value2 == 3){
+            emitter.emit = true;
+            value2 = 0;
+         }
+         num1 += 0.002;
+      });
+      ticker.start();
+   }
+   getRotation(positionx, minValue, maxValue, radio, scale){
+      return positionx === minValue ? radio: (positionx - minValue) * (scale - radio) / (maxValue - minValue) + radio;
+   }
+   renderChairlift(){
+
+   }
+   renderMountainCloud(){
+
+   }
+   renderFox(){
+
+   }
+   renderLeaves(){
+
+   }
+   renderPumpkin(){
+
+   }
+   renderRainbow(){
+
+   }
+   renderLineBird(){
+
+   }
+   renderRocket(){
+
+   }
+   renderSnow(){
+
+   }
+   renderTarctor(){
+      let particleContainer = new PIXI.particles.ParticleContainer(200, {
+         scale: true,
+         position: true,
+         /*rotation: true,
+         uvs: true,*/
+         alpha: true
+      });
+      particleContainer.position.set(1480, 560);
+      let cloudTexure = new PIXI.Texture.fromFrame('cloud.png');
+      let particlesTexure = new PIXI.Texture.fromFrame('particle.png');
+      let config = {
+         alpha: {
+            start: .41,
+            end: 0
+         },
+         scale: {
+            start: .005,
+            end: .2,
+            minimumScaleMultiplier: 1
+         },
+         color: {
+            start: "#ffffff",
+            end: "#ffffff"
+         },
+         speed: {
+            start: 30,
+            end: 100
+         },
+         acceleration: {
+            x: 0,
+            y: 0
+         },
+         startRotation: {
+            min: 250,
+            max: 290
+         },
+         noRotation: false,
+         rotationSpeed: {
+            min: 0,
+            max: 0
+         },
+         lifetime: {
+            min: .5,
+            max: 1
+         },
+         blendMode: "normal",
+         frequency: .001,
+         emitterLifetime: -1,
+         maxParticles: 20,
+         pos: {
+            x: 0,
+            y: 0
+         },
+         addAtBack: true,
+         spawnType: "rect",
+         spawnRect: {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+         }
+      }
+      //pixi-particles:https://github.com/pixijs/pixi-particles
+      let emitter = new PIXI.particles.Emitter(particleContainer, [particlesTexure, cloudTexure], config);
+      emitter.emit = true;
+      this.mainScene.addChild(particleContainer);
+
+      let elapsed = Date.now();
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         var now = Date.now();
+         emitter.update((now - elapsed) * 0.001);
+         elapsed = now;
+      });
+      ticker.start();
+   }
+   renderWindmill(){
+      let windmillScene = new PIXI.Container();
+      let windmillSprite = new PIXI.Sprite(new PIXI.Texture.from('windmill.png'));
+      windmillSprite.anchor.set(0.5);
+      windmillSprite.scale.set(0.666);
+      windmillSprite.position.set(1140, 440);
+      windmillScene.addChild(windmillSprite);
+      this.mainScene.addChild(windmillScene);
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         windmillSprite.rotation += 0.005;
       });
       ticker.start();
    }
