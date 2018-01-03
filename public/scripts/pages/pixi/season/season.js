@@ -864,7 +864,7 @@ class SeasonTest{
       let ballonMainScene = new PIXI.Container();
       ballonMainScene.position.set(1380, 360);
       let ballonScene = new PIXI.Container();
-      ballonScene.scale.set(0.666);
+      //ballonScene.scale.set(0.666);
       let lightScene = new PIXI.Container();
       ballonScene.addChild(lightScene);
       let ballonSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon.png'));
@@ -879,7 +879,7 @@ class SeasonTest{
       lightScene.addChild(lightSprite);
 
       let particleContainer = new PIXI.Container();
-      particleContainer.position.set( - 9, 129);
+      particleContainer.position.set( - 9, 182);
       let config = {
          alpha: {
             start: .4,
@@ -949,11 +949,10 @@ class SeasonTest{
       ballonMainScene.addChild(ballonScene);
       this.mainScene.addChild(ballonMainScene);
 
-      let elapsed = Date.now(), num1 = 0, value1 = 0, value2 = 0;
+      let elapsed = Date.now(), num1 = 0, value1 = 0, value2 = 0, flag = false;
       let ticker = new PIXI.ticker.Ticker();
       ticker.stop();
       ticker.add(() => {
-         value1 += 0.02;
          value2 += 0.02;
          ballonScene.position.x = 160 * Math.cos(num1);
          ballonScene.rotation = this.getRotation(ballonScene.position.x, -160, 160, -0.4 / 8, 0.4);
@@ -961,20 +960,25 @@ class SeasonTest{
          ballonScene.scale.x = ballonScene.scale.y = .6 + .05 * Math.sin(2 * num1);
          lightScene.rotation = .05 * Math.cos(20 * num1);
          lineRect.width = 1 + 1 / 0.5;
+         if(value2 > 3 && !flag){
+            emitter.emit = true;
+            flag = true;
+         }
+         if(flag){
+            value1 += 0.02;
+            if(value1 > 0.1){
+               lightSprite.alpha = .3 === lightSprite.alpha ? .15 : .3;
+               value1 = 0;
+            }
+         }
+         if(value2 > 4){
+            lightSprite.alpha = 0;
+            value2 = 0;
+            flag = false;
+         }
          var now = Date.now();
          emitter.update((now - elapsed) * 0.001);
          elapsed = now;
-         if(value1 == 0.1){
-            lightSprite.alpha = .3 === lightSprite.alpha ? .15 : .3;
-         }
-         if(value1 == 0.3){
-            lightSprite.alpha = 0;
-            value1 = 0;
-         }
-         if(value2 == 3){
-            emitter.emit = true;
-            value2 = 0;
-         }
          num1 += 0.002;
       });
       ticker.start();
