@@ -873,7 +873,7 @@ class SeasonTest{
 
       let lightSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon_flicker.png'));
       lightSprite.scale.set(.5);
-      lightSprite.position.set( - 81, 17);
+      lightSprite.position.set( - 81, 27);
       lightSprite.blendMode = 1;
       lightSprite.alpha = 0;
       lightScene.addChild(lightSprite);
