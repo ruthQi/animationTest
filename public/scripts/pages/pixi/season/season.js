@@ -34,11 +34,13 @@ class SeasonTest{
                  .add(this.imgSrc+'game_sm.png')
                  .add(this.imgSrc+'river_mask.png')
                  .add(this.imgSrc+'ocean_mask.png')
+                 .add(this.imgSrc+'cloud_mask.png')
                  .add(this.imgSrc+'chairlift.png')
                  .add('waterfall', '/scripts/assets/season/waterfall.json')
                  .add('river', '/scripts/assets/season/river.json')
                  .add('ocean', '/scripts/assets/season/ocean.json')
                  .add('game', '/scripts/assets/season/game.json')
+                 .add('chairlift', '/scripts/assets/season/chairlift.json')
                  //.add('game_sm', '/scripts/assets/season/game_sm.json')
                  .load(this.loadComplete);
    }
@@ -65,7 +67,7 @@ class SeasonTest{
       this.renderPinWheel();//渲染风车
       //=================todo==================
       this.renderBalloon();//渲染热气球
-      this.renderChairlift();//渲染热气球
+      this.renderChairlift();//渲染过山车
       this.renderMountainCloud();//上头上的云彩
       this.renderFox();//渲染狐狸
       this.renderLeaves();//渲染枫叶
@@ -218,7 +220,7 @@ class SeasonTest{
    renderRiver(){
       let riverScence = new PIXI.Container();
       //let riverMask = new PIXI.Sprite(this.loader.resources[this.imgSrc+'river_mask.png'].texture);
-      let riverMask = new PIXI.Sprite(PIXI.Texture.from(this.imgSrc+'river_mask.png'));
+      let riverMask = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'river_mask.png'));
       riverMask.scale.set(0.666);
       riverMask.position.set(563,546);
       //riverScence.mask = riverMask;
@@ -582,7 +584,7 @@ class SeasonTest{
    renderWhale(){
       let whaleScenen = new PIXI.Container();
       whaleScenen.position.set(1700, 1125);
-      let whaleSprite = new PIXI.Sprite(PIXI.Texture.from('whale_tail.png'));
+      let whaleSprite = new PIXI.Sprite(new PIXI.Texture.from('whale_tail.png'));
       whaleSprite.scale.set(0.666);
       whaleScenen.addChild(whaleSprite);
       this.mainScene.addChild(whaleScenen);
@@ -600,7 +602,7 @@ class SeasonTest{
    renderBoat(){
       let boatScene = new PIXI.Container();
       boatScene.position.set(1235, 1125);
-      let boatSprite = new PIXI.Sprite(PIXI.Texture.from('boat.png'));
+      let boatSprite = new PIXI.Sprite(new PIXI.Texture.from('boat.png'));
       boatSprite.scale.set(0.666);
       boatScene.addChild(boatSprite);
       this.mainScene.addChild(boatScene);
@@ -620,11 +622,11 @@ class SeasonTest{
       duckScene.position.set(1450, 1125);
       let rect1 = new PIXI.Rectangle(30, 80, 0, 0);
       let rect2 = new PIXI.Rectangle(180, 80, 180, 0);
-      let duckSprite1 = new PIXI.Sprite(PIXI.Texture.from('duck_1.png'));
+      let duckSprite1 = new PIXI.Sprite(new PIXI.Texture.from('duck_1.png'));
       let duckSprite1X = rect1.x + rect1.width/2 * Math.random();
       let duckSprite1Y = rect1.y + rect1.height/2 * Math.random();
       duckScene.addChild(duckSprite1);
-      let duckSprite2 = new PIXI.Sprite(PIXI.Texture.from('duck_2.png'));
+      let duckSprite2 = new PIXI.Sprite(new PIXI.Texture.from('duck_2.png'));
       let duckSprite2X = rect2.x + rect2.width/2 * Math.random();
       let duckSprite2Y = rect2.y + rect2.height/2 * Math.random();
       duckScene.addChild(duckSprite2);
@@ -737,7 +739,7 @@ class SeasonTest{
       seagullSmScene.scale.set(0.666);
       let seagullSmArray = [];
       for(var i=1;i<5;i++){
-         let texture = PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
+         let texture = new PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
          seagullSmArray.push(texture);
       }
       var animationSM = new PIXI.extras.AnimatedSprite(seagullSmArray);
@@ -765,7 +767,7 @@ class SeasonTest{
       seagullScene.scale.set(0.666);
       let seagullArray = [];
       for(var i=1;i<6;i++){
-         let texture = PIXI.Texture.fromFrame('seagull_'+i+'.png');
+         let texture = new PIXI.Texture.fromFrame('seagull_'+i+'.png');
          seagullArray.push(texture);
       }
       var animation = new PIXI.extras.AnimatedSprite(seagullArray);
@@ -777,7 +779,7 @@ class SeasonTest{
 
       let seagullSmArray = [];
       for(var i=1;i<5;i++){
-         let texture = PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
+         let texture = new PIXI.Texture.fromFrame('seagull_small_'+i+'.png');
          seagullSmArray.push(texture);
       }
       var animationSM = new PIXI.extras.AnimatedSprite(seagullSmArray);
@@ -864,7 +866,7 @@ class SeasonTest{
       let ballonMainScene = new PIXI.Container();
       ballonMainScene.position.set(1380, 360);
       let ballonScene = new PIXI.Container();
-      //ballonScene.scale.set(0.666);
+      ballonScene.scale.set(0.666);
       let lightScene = new PIXI.Container();
       ballonScene.addChild(lightScene);
       let ballonSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon.png'));
@@ -872,8 +874,8 @@ class SeasonTest{
       lightScene.addChild(ballonSprite);
 
       let lightSprite = new PIXI.Sprite(new PIXI.Texture.from('balloon_flicker.png'));
-      lightSprite.scale.set(.5);
-      lightSprite.position.set( - 81, 27);
+      lightSprite.scale.set(0.8);
+      lightSprite.position.set( -111, -17);
       lightSprite.blendMode = 1;
       lightSprite.alpha = 0;
       lightScene.addChild(lightSprite);
@@ -935,7 +937,6 @@ class SeasonTest{
       let cloudTexture = new PIXI.Texture.fromFrame("cloud.png");
       let particleTexture = new PIXI.Texture.fromFrame("particle.png");
       let emitter = new PIXI.particles.Emitter(particleContainer, [particleTexture, cloudTexture], config);
-      //emitter.emit = true;
       lightScene.addChild(particleContainer);
       
 
@@ -945,7 +946,6 @@ class SeasonTest{
       lineRect.endFill();
       lineRect.position.set(-1, -lineRect.height);
       ballonScene.addChild(lineRect);
-      ballonScene.scale.set(0.666);
       ballonMainScene.addChild(ballonScene);
       this.mainScene.addChild(ballonMainScene);
 
@@ -960,6 +960,7 @@ class SeasonTest{
          ballonScene.scale.x = ballonScene.scale.y = .6 + .05 * Math.sin(2 * num1);
          lightScene.rotation = .05 * Math.cos(20 * num1);
          lineRect.width = 1 + 1 / 0.5;
+         //设置emit=true,表示触发
          if(value2 > 3 && !flag){
             emitter.emit = true;
             flag = true;
@@ -987,25 +988,240 @@ class SeasonTest{
       return positionx === minValue ? radio: (positionx - minValue) * (scale - radio) / (maxValue - minValue) + radio;
    }
    renderChairlift(){
+      let leftArr = [], rightArr = [],
+      rightMin = new PIXI.Point(20, 27),
+      rightMax = new PIXI.Point(532, 151),
+      leftMax = new PIXI.Point(531, 172),
+      leftMin = new PIXI.Point(11, 47);
+      let chairScene = new PIXI.Container();
+      chairScene.scale.set(0.666);
+      chairScene.position.set(530, 370);
+      let backCableSprite = new PIXI.Sprite(new PIXI.Texture.from('chairlift_cable_back.png'));
+      backCableSprite.scale.set(0.5);
+      chairScene.addChild(backCableSprite);
+      //向右：x越来越大，y越来越大
+      for(var i = 0; i < 4; i++){
+         let spriteRight = new PIXI.Sprite(new PIXI.Texture.from('chairlift_chair_right.png'));
+         spriteRight.scale.set(0.5);
+         spriteRight.position.x = rightMin.x + (rightMax.x - rightMin.x) * 0.25 * i;
+         spriteRight.position.y = rightMin.y + (rightMax.y - rightMin.y) * 0.25 * i;
+         //console.log(spriteRight.position)
+         rightArr.push(spriteRight);
+         chairScene.addChild(spriteRight);
+      }
 
+      let backSprite = new PIXI.Sprite(new PIXI.Texture.from('chairlift_back.png'));
+      backSprite.scale.set(0.5);
+      chairScene.addChild(backSprite);
+      this.mainScene.addChild(chairScene);
+
+      let cableSprite = new PIXI.Sprite(new PIXI.Texture.from('chairlift_cable.png'));
+      cableSprite.scale.set(0.5);
+      chairScene.addChild(cableSprite);
+      //向左：x越来越小，y越来越小
+      for(var i = 0; i < 4; i++){
+
+         let spriteLeft = new PIXI.Sprite(new PIXI.Texture.from('chairlift_chair_left.png'));
+         spriteLeft.scale.set(0.5);
+         spriteLeft.position.x = leftMax.x + (leftMin.x - leftMax.x) * 0.25 * i;
+         spriteLeft.position.y = leftMax.y + (leftMin.y - leftMax.y) * 0.25 * i;
+         leftArr.push(spriteLeft);
+         chairScene.addChild(spriteLeft);
+      }
+      
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         for(var i = 0; i < 4; i++){
+            let spriteRight = rightArr[i];
+            spriteRight.position.x += (rightMax.x - rightMin.x) / 1200;
+            spriteRight.position.y += (rightMax.y - rightMin.y) / 1200;
+            spriteRight.rotation = 0.01 * Math.sin(num1);
+            //向右时，每当比最大值还大时，就把此元素放到最小的位置
+            if(spriteRight.position.x > rightMax.x){
+               spriteRight.position.copy(rightMin);
+            }
+            let spriteLeft = leftArr[i];
+            spriteLeft.position.x += (leftMin.x - leftMax.x) / 1200;
+            spriteLeft.position.y += (leftMin.y - leftMax.y) / 1200;
+            spriteLeft.rotation = 0.01 * Math.cos(num1);
+            //向左时，每当比最小值还小时，就把此元素放到最大的位置
+            if(spriteLeft.position.x < leftMin.x){
+               spriteLeft.position.copy(leftMax);
+            }
+         }
+         num1 += 0.1;
+      });
+      ticker.start();
    }
    renderMountainCloud(){
+      let mountainScene = new PIXI.Container();
+      mountainScene.scale.set(0.666);
+      mountainScene.position.set(550, 390);
+      let cloudMask = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'cloud_mask.png'));
+      mountainScene.addChild(cloudMask);
+      mountainScene.mask = cloudMask;
 
+      let cloudTexture = new PIXI.Texture.from('cloud_puff.png');
+      let spriteWhite = new PIXI.Sprite(cloudTexture);
+      spriteWhite.position.set(-30, 0);
+      spriteWhite.scale.set(3);
+      spriteWhite.alpha = 0.4;
+      mountainScene.addChild(spriteWhite);
+
+      let spriteColor = new PIXI.Sprite(cloudTexture);
+      spriteColor.position.set(180,108);
+      spriteColor.scale.set(2);
+      spriteColor.tint = 16724479;
+      spriteColor.alpha = 0.25;
+      spriteColor.rotation = 0.05;
+      mountainScene.addChild(spriteColor);
+
+      let spriteCloud = new PIXI.Sprite(cloudTexture);
+      spriteCloud.position.set(400, 340);
+      spriteCloud.alpha = 0.8;
+      spriteCloud.rotation = 0.1;
+      mountainScene.addChild(spriteCloud);
+
+      let spriteCloud1 = new PIXI.Sprite(cloudTexture);
+      spriteCloud1.position.set(140, 120);
+      spriteCloud1.rotation = 0.1;
+      mountainScene.addChild(spriteCloud1);
+
+      this.mainScene.addChild(mountainScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         spriteWhite.position.x = -30 + 10 * Math.cos(num1);
+         spriteWhite.position.y = 10 * Math.sin(num1);
+         spriteWhite.scale.x = 2.9 + 0.05 * Math.cos(2 * num1);
+         spriteWhite.scale.y = 2.9 + 0.05 * Math.sin(2 * num1);
+         spriteWhite.rotation = 0.02 * Math.sin(num1);
+
+         spriteColor.position.x = 180 + 20 * Math.sin(num1);
+         spriteColor.position.y = 108 + 20 * Math.cos(num1);
+         spriteColor.scale.x = 2 + 0.05 * Math.cos(2 * num1);
+         spriteColor.scale.y = 2 + 0.1 * Math.sin(2 * num1);
+         spriteColor.rotation = 0.05 + 0.05 * Math.sin(num1);
+
+         spriteCloud.position.x = 400 + 10 * Math.cos(2 * num1);
+         spriteCloud.position.y = 340 + 10 * Math.sin(2 * num1);
+         spriteCloud.scale.x = 1 + 0.05 * Math.sin(2 * num1);
+         spriteCloud.scale.y = 1 + 0.1 * Math.cos(2 * num1);
+         spriteCloud.rotation = Math.PI + 0.1 + 0.02 * Math.cos(num1);
+
+         spriteCloud1.position.x = 140 + 10 * Math.sin(num1);
+         spriteCloud1.position.y = 120 + 10 * Math.cos(num1);
+         spriteCloud1.scale.x = 1 + 0.02 * Math.cos(num1);
+         spriteCloud1.scale.y = 1 + 0.02 * Math.sin(num1);
+         spriteCloud1.rotation = 0.1 + 0.02 * Math.sin(num1);
+         num1 += 0.005;
+      });
+      ticker.start();
    }
    renderFox(){
+      let foxScene = new PIXI.Container();
+      foxScene.scale.set(0.666);
+      foxScene.rotation = -0.4;
+      foxScene.position.set(260, 995);
+      let foxTailSprite = new PIXI.Sprite(new PIXI.Texture.from('fox_tail.png'));
+      //pivot:it rotates around Assignment by value
+      foxTailSprite.pivot.set(49, 119);
+      foxTailSprite.position.set(foxTailSprite.pivot.x, foxTailSprite.pivot.y);
+      foxScene.addChild(foxTailSprite);
 
+      let foxBodySprite = new PIXI.Sprite(new PIXI.Texture.from('fox_body.png'));
+      foxScene.addChild(foxBodySprite);
+
+      let foxHeaderSprite = new PIXI.Sprite(new PIXI.Texture.from('fox_head.png'));
+      foxHeaderSprite.pivot.set(44, 56);
+      foxHeaderSprite.position.set(foxHeaderSprite.pivot.x, foxHeaderSprite.pivot.y);
+      foxScene.addChild(foxHeaderSprite);
+
+      this.mainScene.addChild(foxScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         foxTailSprite.rotation = 0.6 * Math.cos(5 * num1);
+         foxHeaderSprite.rotation = 0.4 * Math.sin(2 * num1);
+         num1 += 0.01;
+      });
+      ticker.start();
    }
    renderLeaves(){
 
    }
    renderPumpkin(){
+      let pumpkinScene = new PIXI.Container();
+      pumpkinScene.position.set(695, 860);
+      pumpkinScene.scale.set(0.666);
 
+      let bodySprite = new PIXI.Sprite(new PIXI.Texture.from('pumpkin.png'));
+      pumpkinScene.addChild(bodySprite);
+
+      let litSprite = new PIXI.Sprite(new PIXI.Texture.from('pumpkin_lit.png'));
+      pumpkinScene.addChild(litSprite);
+
+      let lightSprite = new PIXI.Sprite(new PIXI.Texture.from('pumpkin_glow.png'));
+      lightSprite.scale.set(0.666);
+      lightSprite.position.set(35, 30);
+      lightSprite.alpha = 0.6;
+      lightSprite.blendMode = 1;
+      pumpkinScene.addChild(lightSprite);
+
+      this.mainScene.addChild(pumpkinScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         lightSprite.alpha = 0.4 + Math.abs(Math.sin(Math.pow(8, Math.sin(num1)))) * 0.2;
+         num1 += 0.05;
+      });
+      ticker.start();
    }
    renderRainbow(){
 
    }
    renderLineBird(){
+      let birdScene = new PIXI.Container();
+      birdScene.scale.set(0.666);
+      birdScene.position.set(520, 745);
 
+      let birdSprite1 = new PIXI.Sprite(new PIXI.Texture.from('robin_1.png'));
+      birdScene.addChild(birdSprite1);
+
+      let birdSprite2 = new PIXI.Sprite(new PIXI.Texture.from('robin_2.png'));
+      birdSprite2.visible = false;
+      birdScene.addChild(birdSprite2);
+
+      this.mainScene.addChild(birdScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), value1 = 0, value2 = 0, flag = false;
+      ticker.stop();
+      ticker.add(() => {
+         value2 += 0.02;
+         if(value2 > 5){
+            flag = true;
+         }
+         if(flag){
+            value1 += 0.02;
+            if(value1 > 0.1){
+               birdSprite1.visible = !birdSprite1.visible;
+               birdSprite2.visible = !birdSprite2.visible;
+               value1 = 0;
+            }
+         }
+         if(value2 > 6){
+            flag = false;
+            value2 = 0;
+            birdSprite1.visible = true;
+            birdSprite2.visible = false;
+         }
+      });
+      ticker.start();
    }
    renderRocket(){
 
