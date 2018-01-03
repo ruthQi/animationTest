@@ -1227,7 +1227,61 @@ class SeasonTest{
 
    }
    renderSnow(){
-
+      let snowScene = new PIXI.Container();
+      snowScene.position.set(450, 280);
+      let circle = new PIXI.Graphics();
+      circle.beginFill(16777215);
+      circle.drawCircle(2, 2, 2);
+      circle.endFill();
+      let circleTexture = circle.generateTexture();
+      let particleContainer = new PIXI.particles.ParticleContainer(100, {
+         scale: true,
+         position: true,
+         alpha: true
+      });
+      for(var i=0; i<40; i++){
+         var itemSprite = new PIXI.Sprite(circleTexture);
+         itemSprite.position.set(this.getRandomData(-120, 120), this.getRandomData(-60, 60));
+         itemSprite.scale.set(this.getRandomData(0.6, 1.2));
+         itemSprite.data = {
+            x: itemSprite.position.x,
+            velocity: 0.5/itemSprite.scale.x + this.getRandomData(0, 0.1),
+            alpha: Math.min(1, .8 / itemSprite.scale.x + this.getRandomData(0, .1)),
+            sway: 3 + Math.floor(this.getRandomData( - 3, 3)),
+            maxY: 120 / itemSprite.scale.x
+         }
+         particleContainer.addChild(itemSprite);
+      }
+      let parChid = particleContainer.children;
+      
+      snowScene.addChild(particleContainer);
+      this.mainScene.addChild(snowScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         for(var i = 0; i < parChid.length; i++){
+            let item = parChid[i];
+            let data = item.data;
+            item.position.x = data.x + Math.cos(num1) * data.sway;
+            item.position.y += data.velocity;
+            if(item.position.y < data.maxY && item.alpha < data.alpha){
+               item.alpha += 0.01;
+            }
+            if(item.position.y > data.maxY){
+               item.alpha -= 0.01;
+            }
+            if(item.position.y > data.maxY && item.alpha <= 0){
+               item.alpha = 0;
+               item.position.y = this.getRandomData(-60, 60);
+            }
+         }
+         num1 += 0.02;
+      });
+      ticker.start();
+   }
+   getRandomData(x, y){
+      return x + Math.random() * (y - x);
    }
    renderTarctor(){
       let particleContainer = new PIXI.particles.ParticleContainer(200, {
