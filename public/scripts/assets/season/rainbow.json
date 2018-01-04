@@ -171,10 +171,10 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "rainbow0.png",
+	"image": "rainbow.png",
 	"format": "RGBA8888",
 	"size": {"w":800,"h":470},
-	"scale": "1",
+	"scale": "2",
 	"smartupdate": "$TexturePacker:SmartUpdate:3f12d6f98c3e9bc7b2fb4d9fa1f5bb4d:34ea1d70ec5e2e0bcf01f46085d89341:9332edf73832c2f6c4878a6ad0d9168a$"
 }
 }

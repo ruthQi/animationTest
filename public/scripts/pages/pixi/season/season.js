@@ -41,6 +41,7 @@ class SeasonTest{
                  .add('ocean', '/scripts/assets/season/ocean.json')
                  .add('game', '/scripts/assets/season/game.json')
                  .add('chairlift', '/scripts/assets/season/chairlift.json')
+                 .add('rainbow', '/scripts/assets/season/rainbow.json')
                  //.add('game_sm', '/scripts/assets/season/game_sm.json')
                  .load(this.loadComplete);
    }
@@ -881,6 +882,7 @@ class SeasonTest{
       lightScene.addChild(lightSprite);
 
       let particleContainer = new PIXI.Container();
+      //emitterLifetime决定了emitter是一直在执行还是执行多长时间就不执行,-1表示一直执行
       particleContainer.position.set( - 9, 182);
       let config = {
          alpha: {
@@ -919,7 +921,7 @@ class SeasonTest{
          },
          blendMode: "normal",
          frequency: .001,
-         emitterLifetime: .6,
+         emitterLifetime: 0.6,
          maxParticles: 100,
          pos: {
             x: 0,
@@ -937,6 +939,7 @@ class SeasonTest{
       let cloudTexture = new PIXI.Texture.fromFrame("cloud.png");
       let particleTexture = new PIXI.Texture.fromFrame("particle.png");
       let emitter = new PIXI.particles.Emitter(particleContainer, [particleTexture, cloudTexture], config);
+      //emitter.emit = true;
       lightScene.addChild(particleContainer);
       
 
@@ -1183,7 +1186,119 @@ class SeasonTest{
       ticker.start();
    }
    renderRainbow(){
+      let rainbowScene = new PIXI.Container(), flag = false, value = 0.1;
+      rainbowScene.position.set(1520, 790);
+      rainbowScene.buttonMode = true;
+      rainbowScene.interactive = true;
 
+      let maskContainer = new PIXI.Container();
+      maskContainer.position.set(352, 140);
+      rainbowScene.addChild(maskContainer);
+
+      let maskSprite = new PIXI.Sprite(new PIXI.Texture.from(this.imgSrc+'rainbow_mask.png'))
+      maskSprite.position.set(-112, 9);
+      maskContainer.addChild(maskSprite);
+      let dropArr = [];
+      for(var i = 0; i < 16; i++){
+         let sprite = new PIXI.Sprite(new PIXI.Texture.from('rainbow_raindrop.png'));
+         let obj = {
+            sprite,
+            velocity: {
+               x: -1,
+               y: this.getRandomData(4, 8)
+            },
+            x: 0,
+            y: 0,
+            scale: this.getRandomData(.45, .5),
+            delayed: 0
+         }
+         sprite.position.set(obj.x, 0);
+         sprite.scale.set(obj.scale);
+         maskContainer.addChild(sprite)
+         dropArr.push(obj)
+      }
+      maskContainer.mask = maskSprite;
+
+      let cloudSprite = new PIXI.Sprite(new PIXI.Texture.from('rainbow_cloud.png'));
+      cloudSprite.position.set(360, 142);
+      cloudSprite.anchor.set(.5);
+      cloudSprite.scale.set(.5);
+      rainbowScene.addChild(cloudSprite);
+
+      let rainbowSprite = new PIXI.Sprite(new PIXI.Texture.from('rainbow.png'));
+      rainbowScene.addChild(rainbowSprite);
+      rainbowScene.scale.set(0.666);
+
+      let animArr = [];
+      for(var i = 1; i < 19; i++){
+         animArr.push('rainbow_anim_' +i+ '.png');
+      }
+      //每个图的位置取决于json文件中的spriteSourceSize的x,y
+      let animation = new PIXI.extras.AnimatedSprite.fromFrames(animArr);
+      //animation.position.set(0, 20);
+      animation.scale.set(2);
+      animation.animationSpeed = .5;
+      animation.loop = false;
+      animation.blendMode = 1;
+      animation.visible = false;
+      animation.onComplete = () => {
+         animation.visible = false;
+         renderRain.bind(this)();
+
+      }
+      rainbowScene.addChild(animation);
+
+      this.mainScene.addChild(rainbowScene);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         //延时小于1并且位置所有大于600时，展示完成，置标志位为flag = false;若不满足条件为true则继续渲染
+         if(flag){
+            let rainFlag = true;
+            for(var i = 0; i< dropArr.length; i++){
+               let obj = dropArr[i];
+               if(obj.delayed < 1){
+                  let sprite = obj.sprite, velocity = obj.velocity;
+                  sprite.position.x += velocity.x;
+                  sprite.position.y += velocity.y;
+                  sprite.scale.x *= 0.99;
+                  sprite.scale.y = sprite.scale.x;
+                  if(sprite.position.x > 600){
+                     sprite.visible = false;
+
+                  }else{
+                     rainFlag = false;
+                  }
+               }else{
+                  rainFlag = false;
+               }
+               obj.delayed--;
+            }
+            flag = !rainFlag;
+            if(value > 0){
+               cloudSprite.rotation = Math.sin(num1) * value;
+               value -= .001;
+            }
+         }
+         num1 += 0.2;
+      });
+      ticker.start();
+
+      rainbowScene.on('touchstart', ()=>{
+         animation.visible = true;
+         animation.gotoAndPlay(0);
+      })
+      function renderRain(){
+         dropArr.forEach((item)=>{
+            item.sprite.position.set(this.getRandomData( - 50, 50), this.getRandomData( - 40, 0));
+            item.sprite.scale.set(item.scale);
+            item.sprite.visible = true;
+            item.delayed = Math.floor(this.getRandomData(0, 80));
+         })
+         value = 0.1;
+         flag = true;
+      }
    }
    renderLineBird(){
       let birdScene = new PIXI.Container();
@@ -1410,10 +1525,11 @@ class SeasonTest{
       ticker.start();
       function setVisible(){
          flag = true;
+         emitter.maxParticles = 50;
          rocketSprite.visible = true;
          rocketSprite.position.set(0, 0);
          rocketSprite.rotation = -0.111685;
-         emitter.maxParticles = 50;
+         
       }
       function setParticlesValue(){
          paramsArr.forEach((item)=>{
