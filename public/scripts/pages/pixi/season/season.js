@@ -1,7 +1,7 @@
 
 var PIXI = require('pixi.js');
 require('pixi-particles');
-import {TweenLite} from 'gsap';
+import {TweenLite, TimelineLite} from 'gsap';
 class SeasonTest{
    constructor(){
       this.imgSrc = '/images/season/';
@@ -1224,7 +1224,209 @@ class SeasonTest{
       ticker.start();
    }
    renderRocket(){
+      let rocketScene = new PIXI.Container(), flag = true, finishFlag = false, timelineLite;
+      rocketScene.scale.set(0.8);
+      rocketScene.position.set(407, 1070);
+      rocketScene.buttonMode = true;
+      rocketScene.interactive = true;
 
+      let rocketSprite = new PIXI.Sprite.from('rocket.png');//(new PIXI.Texture.from(''));
+      rocketSprite.anchor.set(0.5, 1);
+      rocketSprite.rotation = -0.111685;
+      rocketScene.addChild(rocketSprite);
+
+      let particleContainer = new PIXI.Container();
+      rocketSprite.addChild(particleContainer);
+      particleContainer.position.set(2, -50);
+      particleContainer.rotation = 3;
+      let cloudTexture = new PIXI.Texture.from('cloud.png');
+      let particleTexture = new PIXI.Texture.from('particle.png');
+      let config = {
+         alpha: {
+            start: .4,
+            end: 0
+         },
+         scale: {
+            start: .2,
+            end: .05,
+            minimumScaleMultiplier: 1
+         },
+         color: {
+            start: "#ffdd33",
+            end: "#dddddd"
+         },
+         speed: {
+            start: 30,
+            end: 200
+         },
+         acceleration: {
+            x: 0,
+            y: 0
+         },
+         startRotation: {
+            min: 250,
+            max: 290
+         },
+         noRotation: !1,
+         rotationSpeed: {
+            min: 0,
+            max: 0
+         },
+         lifetime: {
+            min: .5,
+            max: 1.5
+         },
+         blendMode: "normal",
+         frequency: .001,
+         emitterLifetime: -1,
+         maxParticles: 20,
+         pos: {
+            x: 0,
+            y: 0
+         },
+         addAtBack: !0,
+         spawnType: "rect",
+         spawnRect: {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+         }
+      }
+      let emitter = new PIXI.particles.Emitter(particleContainer, [particleTexture, cloudTexture], config);
+      emitter.emit = true;
+      emitter.particleBlendMode = 1;
+      var starAnimation = new PIXI.extras.AnimatedSprite.fromFrames(["rocket_spark_1.png", "rocket_spark_2.png", "rocket_spark_3.png", "rocket_spark_4.png"]);
+      starAnimation.anchor.set(.5);
+      starAnimation.position.set(3, -50);
+      rocketSprite.addChild(starAnimation);
+      starAnimation.animationSpeed = .2;
+      starAnimation.play();
+
+      let colorArray = [12989195, 16645875, 34266, 15777047];
+      let grapArr = [], paramsArr = [];
+      colorArray.map((item)=>{
+         let sprite = new PIXI.Graphics();
+         sprite.beginFill(item);
+         sprite.drawRect(-16, -8, 16, 8);
+         sprite.endFill();
+         grapArr.push(sprite.generateTexture());
+      });
+      let rectContainer = new PIXI.Container();
+      rocketScene.addChild(rectContainer);
+      grapArr.forEach((item, index)=>{
+         let partiCon = new PIXI.Container();
+         partiCon.position.set(100 * index, 0);
+         for(var i = 0; i < 80; i++){
+            let itemSprite = new PIXI.Sprite(item);
+            partiCon.addChild(itemSprite);
+            paramsArr.push({
+               sprite: itemSprite,
+               gravity: this.getRandomData(6, 12),
+               startVelocity: {
+                  x: Math.cos(2 * Math.PI / 80 * i) * this.getRandomData(15, 30),
+                  y: Math.sin(2 * Math.PI / 80 * i) * this.getRandomData(15, 30)
+               },
+               velocity: {
+                  x: 0,
+                  y: 0
+               },
+               rotationVelocity: this.getRandomData( - .2, .2),
+               alpha: 1
+            })
+         }
+         rectContainer.addChild(partiCon);
+         rectContainer.visible = false;
+      })
+      this.mainScene.addChild(rocketScene);
+      rocketScene.on('touchstart', ()=>{
+         if(flag){
+            if(timelineLite){
+               timelineLite.kill();
+            }
+            finishFlag = false;
+            rectContainer.visible = false;
+            //初始化参数，必须，否则第二次点击不出现碎片，因为位置不对，透明度不对
+            setParticlesValue();
+            setVisible();
+            flag = false;
+            emitter.maxParticles = 500;
+            timelineLite = new TimelineLite();
+            timelineLite.to(rocketSprite, 1.6, {
+               bezier: {
+                  values: [{x: 0, y: -120}, {x: 150, y: -360}, {x: 360, y: -480}, {x: 540, y: -540}],
+                  autoRotate: ['x', 'y', 'rotation', Math.PI / 2, true]
+               },
+               ease: window.Power1.easeIn,
+               onComplete: () => {
+                  rocketSprite.visible = false;
+                  rectContainer.position.set(rocketSprite.position.x, rocketSprite.position.y);
+                  rectContainer.visible = true;
+                  finishFlag = true;
+                  setTimeout(()=>{
+                     setVisible();
+                  }, 200)
+               }
+            })
+         }
+      })
+      //动画
+      let elapsed = Date.now(), num1 = 0;
+      let ticker = new PIXI.ticker.Ticker();
+      ticker.stop();
+      ticker.add(() => {
+         var now = Date.now();
+         emitter.update((now - elapsed) * 0.001);
+         elapsed = now;
+         if(flag){
+            rocketSprite.rotation = -0.111685 + .008 * Math.sin(10 * num1);
+         }
+         if(finishFlag){
+            for(var i = 0; i < paramsArr.length; i++){
+               let obj = paramsArr[i],
+                  sprite = obj.sprite,
+                  velocity = obj.velocity,
+                  gravity = obj.gravity,
+                  rotation = obj.rotationVelocity;
+               sprite.position.x = sprite.position.x + velocity.x;
+               sprite.position.y = sprite.position.y + velocity.y + gravity;
+               velocity.x *= 0.98;
+               velocity.y *= 0.98;
+               //console.log(velocity)
+               obj.alpha *= 0.99;
+               sprite.alpha = 0.2 + obj.alpha;
+               sprite.rotation += rotation;
+               sprite.scale.x -= 0.005;
+               sprite.scale.y -= 0.005;
+               if(sprite.scale.x < 0.2){
+                  finishFlag = false;
+                  rectContainer.visible = false;
+               }
+            }
+         }
+         
+         num1 += 0.1;
+      });
+      ticker.start();
+      function setVisible(){
+         flag = true;
+         rocketSprite.visible = true;
+         rocketSprite.position.set(0, 0);
+         rocketSprite.rotation = -0.111685;
+         emitter.maxParticles = 50;
+      }
+      function setParticlesValue(){
+         paramsArr.forEach((item)=>{
+            let itemSprite = item.sprite;
+            itemSprite.position.set(0,0);
+            itemSprite.scale.set(1.2);
+            itemSprite.alpha = 1;
+            itemSprite.rotation = 0;
+            item.velocity.x = item.startVelocity.x;
+            item.velocity.y = item.startVelocity.y;
+            item.alpha = 1;
+         })
+      }
    }
    renderSnow(){
       let snowScene = new PIXI.Container();
@@ -1234,11 +1436,11 @@ class SeasonTest{
       circle.drawCircle(2, 2, 2);
       circle.endFill();
       let circleTexture = circle.generateTexture();
-      let particleContainer = new PIXI.particles.ParticleContainer(100, {
+      let particleContainer = new PIXI.Container();/*new PIXI.particles.ParticleContainer(100, {
          scale: true,
          position: true,
          alpha: true
-      });
+      });*/
       for(var i=0; i<40; i++){
          var itemSprite = new PIXI.Sprite(circleTexture);
          itemSprite.position.set(this.getRandomData(-120, 120), this.getRandomData(-60, 60));
