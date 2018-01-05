@@ -126,7 +126,8 @@ class SeasonTest{
       })
    }
    scrollFun = (left, top, zoom) => {
-      //console.log(left)
+      this.scrollTop = top;
+      this.scrollLeft = left;
       this.mainScene.position.x = -left;
       this.mainScene.position.y = -top;
    }
@@ -1155,7 +1156,88 @@ class SeasonTest{
       ticker.start();
    }
    renderLeaves(){
+      let leaveContainer = new PIXI.Container(), leafArr = [], spriteArr = [];
+      leaveContainer.scale.set(0.666);
+      leaveContainer.position.set(430, 1000);
+      leaveContainer.buttonMode = true;
+      leaveContainer.interactive = true;
+      for(var i = 1; i < 6; i++){
+         leafArr.push(new PIXI.Texture.from('leaf_'+i+'.png'))
+      }
+      for(var i = 0; i < 30; i++){
+         let num = Math.floor(Math.random() * leafArr.length);
+         let sprite = new PIXI.Sprite(leafArr[num]);
+         sprite.visible = false;
+         let obj = {
+            sprite: sprite,
+            velocity: {
+               x:0,
+               y:0,
+               z:0
+            },
+            rotation:0
+         }
+         leaveContainer.addChild(sprite);
+         spriteArr.push(obj);
+      }
+      leaveContainer.hitArea = new PIXI.Polygon(-150, 120, 340, -220, 720, -230, 670, -50, 350, 80, 300, 200, 100, 450, -400, 450);
+      /*let pol = new PIXI.Graphics();
+      pol.beginFill(16777215);
+      pol.drawPolygon(-150, 120, 340, -220, 720, -230, 670, -50, 350, 80, 300, 200, 100, 450, -400, 450);
+      pol.endFill();
+      leaveContainer.addChild(pol);*/
+      leaveContainer.on('touchstart', (e)=>{
+         
+         let positionx = this.scrollLeft + e.data.global.x - leaveContainer.position.x, positiony = this.scrollTop + e.data.global.y - leaveContainer.position.y;
+         for(var i = 0; i< 30; i++){
+            let sprite = spriteArr[i].sprite,
+               velocity = spriteArr[i].velocity;
+            sprite.position.set(this.getRandomData(positionx - 20, positionx + 20), this.getRandomData(positiony - 20, positiony + 20));
+            sprite.scale.set(1);
+            sprite.alpha = 1;
+            sprite.visible = true;
 
+            velocity.x = (positionx - sprite.position.x) * this.getRandomData(1, 1.5);
+            velocity.y = (positiony - sprite.position.y) * this.getRandomData(1, 1.5);
+            velocity.z = this.getRandomData(0.2, 1);
+
+            spriteArr[i].rotation = this.getRandomData(-0.6, 0.6);
+         }
+      })
+      this.mainScene.addChild(leaveContainer);
+      //动画
+      let ticker = new PIXI.ticker.Ticker(), num1 = 0;
+      ticker.stop();
+      ticker.add(() => {
+         for(var i = 0; i< spriteArr.length; i++){
+            let obj = spriteArr[i],
+               sprite = obj.sprite,
+               velocity = obj.velocity,
+               rotation = obj.rotation;
+               //console.log('-----------', sprite.position)
+            if(sprite.visible){
+               //console.log(sprite.x, sprite.y)
+               sprite.position.x += velocity.x;
+               sprite.position.y += velocity.y;
+               //console.log('====', sprite.position)
+               let value = sprite.scale.x + velocity.z - 0.5;
+               let scale = value < 1 ? 1 : value > 2.5 ? 2.5 : value;
+               sprite.scale.set(scale);
+               sprite.rotation += rotation;
+               velocity.x *= 0.95;
+               velocity.y *= 0.95;
+               velocity.z *= 0.95;
+               obj.rotation *= 0.95;
+               if(Math.abs(velocity.x) + Math.abs(velocity.y) < 0.5){
+                  sprite.alpha *= 0.9;
+               }
+               if(sprite.visible < 0.1){
+                  sprite.visible = false;
+               }
+            }
+         }
+      });
+      ticker.start();
    }
    renderPumpkin(){
       let pumpkinScene = new PIXI.Container();
