@@ -36,6 +36,9 @@ module.exports = function(app) {
    app.use('/miss', miss);
    app.get('/season', function(req, res, next){
       res.render('pages/pixi/season');
+   });
+   app.get('/music', function(req, res, next){
+      res.render('pages/threejs/music');
    })
 
 };
