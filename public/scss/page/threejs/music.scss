@@ -1,0 +1,40 @@
+body{
+   width: 100%;
+   height: 100%;
+   overflow: hidden;
+   background: #262231;
+}
+#loading {
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   background: #262231;
+   top: 0;
+   z-index: 99;
+   .splash-text {
+      text-align: center;
+      font-family: arial;
+      position: relative;
+      letter-spacing: 20px;
+      top: 34%;
+      font-size: 30px;
+      line-height: 60px;
+      color: #f4f4f4;
+   }
+   .splash-percentage {
+      font-family: bodoni-italic;
+      font-style: italic;
+      font-weight: 100;
+      font-size: 88px;
+      text-align: center;
+      line-height: 160px;
+      transform: rotate(-18deg);
+      color: #414141;
+      width: 100%;
+      height: 140px;
+      position: relative;
+      top: 33%;
+      left: -2%;
+      color: #f4f4f4;
+   }
+}
