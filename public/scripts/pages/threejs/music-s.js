@@ -12,10 +12,12 @@ class Music{
       this.dpr = 2;
       this.waterWidth = window.innerWidth;
       this.waterHeight = window.innerHeight - window.innerWidth * 175/375;
-      this.initGame();
-      this.createAsset();
+      this.initGame();//创建game
+      this.createAsset();//添加loading
       this.createGuide();
-      this.createMan();
+      this.createMan();//创建你
+      this.createThreejs();
+      this.createScene1();//创建场景1：寻找
       
       Game.init();
       
@@ -59,6 +61,9 @@ class Music{
             this.ticker.start(true);
             //this.stage.onUpdate = this.onUpdate.bind(this);
             this.initGuide();
+            bgDecration.canvasBg();
+            bgDecration.transCamera();
+            
             $('#musicView').append(this.stage.canvas);
          },
          scale: function(){
@@ -76,11 +81,159 @@ class Music{
             this.guide.showIntro();
          },
          initMan: function(){
-            this.man = new Game.Man();
+            this.man = new Game.Man({
+               id: "me",
+               startX: 110,
+               startY: 390
+            });
+            //addTo(x, y):x表示父容器，y表示要添加到索引的位置
+            this.man.addTo(this.stage, 1);
+            this.man.getReady();
+            //this.MIDDLE_SCENE = this.width >> 1
+         },
+         gameReady: function() {
+            this.firstTime = 0;
+            this.isReady = true;
+         },
+         initScene: function(x, y){
+            this.scene1 = new Game.Scene1();
+            this.scene1.addTo(this.stage);
+            //Game.Scene1.init();
          }
       }
    }
-
+   createScene1(){
+      Game.Scene1 = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: function(){
+            Game.Scene1.superclass.constructor.call(this);
+            this.xunzhao = new Hilo.Bitmap(Object.assign({}, {x:60, y: 440}, {
+               image: Game.asset.xunzhao
+            }));
+            this.init();
+         },
+         init: function(){
+            console.log(this.xunzhao)
+            this.addChild(this.xunzhao);
+         }
+      })
+   }
+   createThreejs(){
+      window.bgDecration = {
+         imgSrc: '/images/music/',
+         canvasBg: function(){
+            var width = window.innerWidth, height = window.innerHeight;
+            this.camera = new THREE.PerspectiveCamera(90, width / height, .01, 1e3);
+            this.renderer = new THREE.WebGLRenderer({
+               alpha: true,
+               antialias: true
+            });
+            this.renderer.setSize(width, height);
+            this.renderer.setPixelRatio(2);
+            this.initScene();
+            //console.log()
+            this.animate();
+            $('#musicViewBack').append(this.renderer.domElement);
+         },
+         initScene: function(){
+            this.scene = new THREE.Scene;
+            this.scene.background = new THREE.Color(2499121);
+            var gameBg = (new THREE.TextureLoader).load(this.imgSrc+'game-bg.jpg');
+            THREE.ImageUtils.crossOrigin = "";
+            gameBg.wrapS = THREE.RepeatWrapping;
+            gameBg.wrapT = THREE.MirroredRepeatWrapping;
+            this.scene.background = gameBg;
+            this.initParticles();
+         },
+         initParticles: function(){
+            var width = window.innerWidth, height = window.innerHeight, material, geometry;
+            this.points = [];
+            for (var i = 0; i < 3; ++i) {
+               material = new THREE.PointsMaterial({
+                  color: 15856371,
+                  size: 2,
+                  transparent: true,
+                  opacity: 1
+               });
+               geometry = new THREE.Geometry;
+               for(var j = 0; j< 80; ++j){
+                  let x = Math.random() * width * 2 - width,
+                      y = Math.random() * height * 2 - height,
+                      z = 400 * Math.random();
+                  geometry.vertices.push(new THREE.Vector3(x, y, z));
+               }
+               let obj = new THREE.Points(geometry, material);
+               this.scene.add(obj);
+               this.points.push(obj);
+               obj.position.x = width * i;
+            }
+            material = new THREE.PointsMaterial({
+               color: 15856371,
+               size: 2,
+               transparent: true,
+               opacity: 0.7
+            });
+            geometry = new THREE.Geometry;
+            for(var i = 0; i < 150; i++){
+               let x = Math.random() * width * 2 - width,
+                   y = Math.random() * height * 2 - height,
+                   z = 450;
+               geometry.vertices.push(new THREE.Vector3(x, y, z));
+            }
+            let obj1 = new THREE.Points(geometry, material);
+            this.scene.add(obj1);
+            this.points.push(obj1);
+            obj1.position.x = width;
+            this.bigPoints = obj1;
+         },
+         transCamera: function(){
+            let timeLite = new TimelineLite();
+            let obj = {
+               z: 400,
+               o: 1
+            }
+            timeLite.to(obj, 5, {
+               z: 700,
+               o: .5,
+               onUpdate: () => {
+                  this.camera.position.z = obj.z;
+                  this.points[0].material.opacity = obj.o;
+                  this.points[1].material.opacity = obj.o;
+                  this.points[2].material.opacity = obj.o;
+               },
+               onComplete: () => {
+                  this.isMoveLeft = true;//i()
+               },
+               ease: Power2.easeInOut
+            })
+         },
+         animate: function(){
+            this.animateId = requestAnimationFrame(this.animate.bind(this));
+            var width = 1.5 * window.innerWidth,
+                height = 1.5 * window.innerHeight;
+            if(this.points){
+               if(this.isMoveLeft){
+                  this.points[0].position.x -= 1;
+                  this.points[1].position.x -= 1;
+                  this.bigPoints.position.x -= .15;
+                  this.points[0].position.x < -width && (this.points[0].position.x = width);
+                  this.points[1].position.x < -width && (this.points[1].position.x = width);
+                  this.bigPoints.position.x < -width && (this.bigPoints.position.x = width);
+               }/*else{
+                  if(this.isMoveDown){
+                     this.points[0].position.y -= 1;
+                     this.points[1].position.y -= 1;
+                     this.points[2].position.y -= 1;
+                     this.points[0].position.y < -height && (this.points[0].position.y = height);
+                     this.points[1].position.y < -height && (this.points[1].position.y = height);
+                     this.points[2].position.y < -height && (this.points[2].position.y = height);
+                  }
+               }*/
+               this.renderer.render(this.scene, this.camera);
+            }
+         }
+      }
+   }
    createAsset(){
       Game.Assets = Hilo.Class.create({
          Mixes: Hilo.EventMixin,
@@ -171,6 +324,8 @@ class Music{
          onComplete: function(){
             //alert('000000000')
             this.intro = this.queue.get('intro').content;
+            this.man = this.queue.get('man').content;
+            this.xunzhao = this.queue.get('xunzhao').content;
             this.queue.off('complete');
             Game.asset.fire('complete');
          },
@@ -185,6 +340,7 @@ class Music{
       })
    }
    createGuide(){
+      //使用一下方式，new出来的对象为正确的，如果方法内使用箭头函数，new出来的对象有问题，不能添加到stage中
       window.Guide = Hilo.Class.create({
          Extends: Hilo.Container,
          constructor: function(){
@@ -209,6 +365,8 @@ class Music{
                },
                onComplete: () => {
                   Game.initMan();
+                  Game.gameReady();
+                  Game.initScene(1, 2);
                }
             })
          }
@@ -217,19 +375,46 @@ class Music{
    createMan(){
       Game.Man = Hilo.Class.create({
          Extends: Hilo.Container,
-         constructor: (i) => {
-            this.manGravity = .003;
+         constructor: function(config){
+            Game.Man.superclass.constructor.call(this, config);
+            this.gravity = .003;
             this.updateJumpPoint(0);
             this.initStepLength = 5;
-            this.init(i);
+            this.init(config);
          },
          startX: 0,
          startY: 0,
-         init: ()=>{
-
+         jumpHeight: 0,
+         init: function(config){
+            var width = Game.COVER_WIDTH;
+            this.man = new Hilo.Bitmap({
+               id: 'man',
+               x: width,
+               y: width,
+               image: Game.asset.man
+            });
+            this.startX = config.startX;
+            this.startY = config.startY;
+            this.width = this.man.width + 2 * width;
+            this.height = this.man.height + 2 * width;
+            //console.log(this.man)
+            this.addChild(this.man);
          },
-         updateJumpPoint: ()=>{
-
+         updateJumpPoint: function(t){
+            if(t >= 0){
+               this.stepLength = 5;
+               var baseNum = 200;
+               baseNum = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4);
+               if(baseNum != this.jumpHeight){
+                  this.jumpHeight = baseNum;
+                  this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity);
+                  this.riseTime = Math.sqrt(2 * this.jumpHeight / this.gravity)
+               }
+            }
+         },
+         getReady: function(){
+            this.x = this.startX;
+            this.y = this.startY;
          }
       });
    }
