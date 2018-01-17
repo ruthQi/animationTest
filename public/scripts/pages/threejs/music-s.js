@@ -12,92 +12,80 @@ class Music{
       this.dpr = 2;
       this.waterWidth = window.innerWidth;
       this.waterHeight = window.innerHeight - window.innerWidth * 175/375;
-      this.initLoader();
-      //this.initGame();
-      //this.initRender();
-   }
-   initLoader(){
-      this.createLoader();
-      this.asset = new Assets();
-      console.log(this.asset)
-      //console.log(this.asset)
-      //添加fire('complete')时，使用on监听complete才起作用，否则监听不到
-      this.asset.on('complete', ()=>{
-         //console.log('0000000000000000000')
-         //移除监听
-         this.asset.off("complete");
-         this.initStage();
-      }, true);
-      this.asset.load();
-   }
-   initStage(){
-      //alert('9999999999')
-      this.width = 750;
-      this.height = 1334;
-      let scaleX = this.innerwidth/this.width, scaleY = this.innerwidth/this.height;
-      this.stage = new Hilo.Stage({
-         renderType: "canvas",
-         width: this.width,
-         height: this.height,
-         scaleX: scaleX,
-         scaleY: scaleY
-      })
-      this.ticker = new Hilo.Ticker(60);
-      this.ticker.addTick(Hilo.Tween);
-      this.ticker.addTick(this.stage);
-      this.ticker.start(true);
-      //this.stage.onUpdate = this.onUpdate.bind(this);
-      this.initGuide();
-      $('#musicView').append(this.stage.canvas);
-   }
-   initGuide(){
+      this.initGame();
+      this.createAsset();
       this.createGuide();
-      console.log(Guide)
-      this.guide = new Guide();
-      //this.stage.addChild(this.guide);
-      //this.stage.addChild(this.guide);
-      this.guide.showIntro();
+      this.createMan();
+      
+      Game.init();
+      
    }
-   createGuide(){
-      window.Guide = Hilo.Class.create({
-         Extends: Hilo.Container,
-         constructor: () => {
-            //Guide.superclass.constructor.call(this);
-            //alert('0000000000000')
-            this.intro = new Hilo.Bitmap({
-               image: this.assetIntro
-            });
-            this.intro.x = this.width - this.intro.width >> 1;
-            this.intro.y = this.height - this.intro.height - 300 >> 1;
+   initGame(){
+      window.Game = {
+         width: 0,
+         height: 0,
+         asset: null,
+         stage: null,
+         ticker: null,
+         man: null,
+         COVER_WIDTH: 4,
+         init: function(){
+            this.asset = new Game.Assets();
+            this.asset.on('complete', ()=>{
+               //console.log('0000000000000000000')
+               //移除监听
+               this.asset.off("complete");
+               this.initStage();
+            }, true);
+            this.asset.load();
          },
-         showIntro: ()=>{
-            this.stage.addChild(this.intro);
-            var t = {
-               y: this.intro.y
-            }
-            let timeLite = new TimelineLite();
-            timeLite.to(t, 1, {
-               y: 450,
-               delay: 4,
-               onUpdate: () => {
-                  this.intro.y = t.y
-                  //console.log(this.intro.y)
-               },
-               onComplete: () => {
-                  this.initMan();
-               }
-            })
+         initStage: function(){
+            this.width = 750;
+            this.height = 1334;
+            //let scaleX = this.innerwidth/this.width, scaleY = this.innerwidth/this.height;
+            this.stage = new Hilo.Stage({
+               renderType: "canvas",
+               width: this.width,
+               height: this.height,
+               scaleX: this.scaleX,
+               scaleY: this.scaleY
+            });
+
+            this.scale();
+
+            this.ticker = new Hilo.Ticker(60);
+            this.ticker.addTick(Hilo.Tween);
+            this.ticker.addTick(this.stage);
+            this.ticker.start(true);
+            //this.stage.onUpdate = this.onUpdate.bind(this);
+            this.initGuide();
+            $('#musicView').append(this.stage.canvas);
+         },
+         scale: function(){
+            this.scaleX = window.innerWidth / this.width;
+            this.scaleY = this.scaleX;
+            this.stage.scaleX = this.scaleX;
+            this.stage.scaleY = this.scaleY;
+         },
+         initGuide: function(){
+            //this.createGuide();
+            //console.log(Guide)
+            this.guide = new Guide();
+            console.log(this.guide)
+            this.stage.addChild(this.guide);
+            this.guide.showIntro();
+         },
+         initMan: function(){
+            this.man = new Game.Man();
          }
-      })
+      }
    }
-   initMan(){
-      //alert('test')
-   }
-   createLoader(){
-      //console.log('99999999999')
-      window.Assets = Hilo.Class.create({
+
+   createAsset(){
+      Game.Assets = Hilo.Class.create({
          Mixes: Hilo.EventMixin,
-         load: ()=>{
+         imgSrc: '/images/music/',
+         load: function(){
             var array = [
                {'id':'block', src: this.imgSrc+'block-1.png'},
                {'id':'man', src: this.imgSrc+'man.png'},
@@ -167,7 +155,7 @@ class Music{
             this.queue = new Hilo.LoadQueue;
             this.queue.add(array);
             this.queue.on('complete', ()=>{
-               this.asset.onComplete();
+               Game.asset.onComplete();
             });
             this.queue.start();
             var progress = 0;
@@ -177,16 +165,16 @@ class Music{
                progress = 100 * num.toFixed(2) >> 0;
                //console.log(progress)
                $('.splash-percentage').html(progress);
-               progress == 100 && this.asset.hideLoading();
+               progress == 100 && Game.asset.hideLoading();
             }, 20);
          },
-         onComplete: ()=>{
+         onComplete: function(){
             //alert('000000000')
-            this.assetIntro = this.queue.get('intro').content;
+            this.intro = this.queue.get('intro').content;
             this.queue.off('complete');
-            this.asset.fire('complete');
+            Game.asset.fire('complete');
          },
-         hideLoading: ()=>{
+         hideLoading: function(){
             clearInterval(this.clock);
             $('.splash-percentage').html(100);
             setTimeout(()=>{
@@ -196,16 +184,55 @@ class Music{
          
       })
    }
-   
-   /*initRender(){
-      this.renderer = new THREE.WebGLRenderer({
-         alpha: true
+   createGuide(){
+      window.Guide = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: function(){
+            Guide.superclass.constructor.call(this);
+            this.intro = new Hilo.Bitmap({
+               image: Game.asset.intro
+            });
+            this.intro.x = Game.width - this.intro.width >> 1;
+            this.intro.y = Game.height - this.intro.height - 300 >> 1;
+         },
+         showIntro: function(){
+            this.addChild(this.intro);
+            var t = {
+               y: this.intro.y
+            }
+            let timeLite = new TimelineLite();
+            timeLite.to(t, 1, {
+               y: 450,
+               delay: 4,
+               onUpdate: () => {
+                  this.intro.y = t.y
+               },
+               onComplete: () => {
+                  Game.initMan();
+               }
+            })
+         }
+      })
+   }
+   createMan(){
+      Game.Man = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: (i) => {
+            this.manGravity = .003;
+            this.updateJumpPoint(0);
+            this.initStepLength = 5;
+            this.init(i);
+         },
+         startX: 0,
+         startY: 0,
+         init: ()=>{
+
+         },
+         updateJumpPoint: ()=>{
+
+         }
       });
-      this.renderer.setPixelRatio(this.dpr);
-      this.renderer.setSize(this.width, this.height);
-      //this.camera = new THREE.PerspectiveCamera();
-      $('#musicView').append(this.renderer.domElement);
-   }*/
+   }
 }
 
 new Music();
