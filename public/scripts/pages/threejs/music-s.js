@@ -2,7 +2,7 @@
 var THREE = require('libs/three.min.js');
 require('libs/hilo/hilo-standalone.js');
 var $ = require('libs/jquery.js');
-import {TimelineLite} from 'gsap';
+import {TweenLite, TimelineLite} from 'gsap';
 //console.log(Hilo)
 class Music{
    constructor(){
@@ -18,6 +18,8 @@ class Music{
       this.createGuide();
       this.createMan();//创建你
       this.createThreejs();
+      this.createJumpFunction();
+      this.createBaseFunction();
       this.createScene1();//创建场景1：寻找
       
       Game.init();
@@ -32,6 +34,12 @@ class Music{
          ticker: null,
          man: null,
          COVER_WIDTH: 4,
+         tagTimeout: 0,
+         oldTime: null,
+         newTime: null,
+         countLongPress: 0,
+         collisionSet: [],
+         isCreativeEnable: false,
          init: function(){
             this.asset = new Game.Assets();
             this.asset.on('complete', ()=>{
@@ -60,12 +68,17 @@ class Music{
             this.ticker.addTick(Hilo.Tween);
             this.ticker.addTick(this.stage);
             this.ticker.start(true);
-            //this.stage.onUpdate = this.onUpdate.bind(this);
+            this.stage.onUpdate = this.onUpdate.bind(this);
             this.initGuide();
             bgDecration.canvasBg();
             bgDecration.transCamera();
-            
             $('#musicView').append(this.stage.canvas);
+            $(window).on('touchstart', ()=>{
+               this.onUserStart();
+            });
+            $(window).on('touchend', ()=>{
+               this.onUserEnd();
+            });
          },
          scale: function(){
             this.scaleX = window.innerWidth / this.width;
@@ -100,6 +113,44 @@ class Music{
             this.scene1 = new Game.Scene1();
             this.scene1.addTo(this.stage);
             //Game.Scene1.init();
+         },
+         onUpdate: function(){
+            if(this.isReady){
+               this.man.isDead && this.recoverGameRecord();
+               this.getCurrentScene();
+               this.clearScene();
+               this.updateScene();
+            }
+         },
+         onUserStart: function(){
+            this.oldTime = new Date();
+            this.tagTimeout = setTimeout(()=>{
+               ++this.countLongPress;
+               this.man.longPress();
+            }, 200);
+         },
+         onUserEnd: function(){
+            clearTimeout(this.tagTimeout);
+            this.man.isMovingX = false;
+            this.man.isLongPress = false;
+            this.newTime = new Date();
+            if(this.newTime - this.oldTime < 200){
+               this.man.shortTouch(this.oldTime);
+            } 
+            this.oldTime = this.newTime;
+            return false;
+         },
+         recoverGameRecord: function(){
+            //console.log('iiiiiiii5')
+         },
+         getCurrentScene: function(){
+            //console.log('iiiiiiii6')
+         },
+         clearScene: function(){
+            //console.log('iiiiiiii7')
+         },
+         updateScene: function(){
+            //console.log('iiiiiiii8')
          }
       }
    }
@@ -147,6 +198,7 @@ class Music{
                y: this.xunzhao.y - 150,
                image: Game.asset.guide_jump_static
             });
+            Game.collisionSet.push(this.block1, this.block2, this.block3)
             this.dropDown();
          },
          dropDown: function(){
@@ -172,12 +224,78 @@ class Music{
                   Game.guide.zoom(0);
                }
             })
-
          },
          showTip1: function(){
-            this.isShowTip1 || (this.isShowTip1 = true, this.addChild(this.sign));
+            if(!this.isShowTip1){
+               this.isShowTip1 = true, this.addChild(this.sign)
+            }
+         },
+         hideTip1: function() {
+            Game.isNoShortClick = false;
+            Game.man.clickCount = 0;
+         },
+         showTip2: function() {
+            if(!this.isShowTip2){
+               this.isShowTip2 = true;
+               this.hideTip1();
+               this.addChild(this.guide_jump);
+            }
+         },
+         hideTip2: function() {
+            if (!this.isHideTip2) {
+               this.isHideTip2 = true;
+               var obj = {
+                  o: 1
+               };
+               let timeLite = new TimelineLite();
+               timeLite.to(obj, 0.2, {
+                  o: 0,
+                  onUpdate: () => {
+                     this.guide_jump.alpha = obj.o
+                  },
+                  onComplete: () => {
+                     this.removeChild(this.guide_jump);
+                     Game.guide.switchToBoth();
+                     Game.guide.removeNewGuide();
+                  },
+                  ease: Power1.easeIn
+               })
+            }
+         },
+         onUpdate: function(){
+            //console.log('wwwwwwwwwwwwwwwwwwwwwwww')
+            this.isShowTip1 && this.sign.updateWidth(this.x);
+            //console.log('------------', this.isOnBlock(this.block2))
+            if(this.isOnBlock(this.block2)){
+               this.showTip2();
+               Game.guide.stopZoomPress();
+               Game.guide.zoom(1);
+            }
+            if(Game.man.isMovingY){
+               this.hideTip2(); 
+               Game.guide.stopZoomClick();
+            }
+         },
+         isOnBlock: function(t) {
+            var man = Game.man, i = baseFunction.offset(t);
+            return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + Game.width
          }
       })
+   }
+   createBaseFunction(){
+      window.baseFunction = {
+         offset: function(obj){
+            if (!obj.parent) return {
+               x: 0,
+               y: 0
+            };
+            var newObj = baseFunction.offset(obj.parent);
+            return {
+               x: obj.x + newObj.x,
+               y: obj.y + newObj.y
+            }
+         }
+      }
    }
    createBlockHilo(){
       window.blockHilo = Hilo.Class.create({
@@ -452,10 +570,15 @@ class Music{
                y: this.guide_move_static.y + 14,
                width: t.width || 0,
                height: 5,
-               background: "#262231"
+               background: '#262231'
             });
             this.addChild(this.guide_move_static);
             this.addChild(this.guide_move_mask);
+         },
+         updateWidth: function(t){
+            console.log(t)
+            var width = Game.man.x + Game.man.manLeft.width - (t + this.x - 37);
+            width >= this.guide_move_static.width - 70 ? this.visible = false : this.guide_move_mask.width = width;
          }
       })
       //使用一下方式，new出来的对象为正确的，如果方法内使用箭头函数，new出来的对象有问题，不能添加到stage中
@@ -583,7 +706,66 @@ class Music{
                this.guide_click_new.alpha = this.fullOpacity;
                this.guide_press_new.alpha = 0;
             }
-         }
+         },
+         toggle2Both: function(t) {
+            if(this.currentGuide != operation.BOTH || t){
+               this.currentGuide = operation.BOTH;
+               TweenLite.to([this.guide_press_new, this.guide_click_new], 0.2, {
+                  alpha: 0
+               });
+               TweenLite.to(this.guide_both_new, .5, {
+                  alpha: this.fullOpacity,
+                  delay: 0
+               })
+            }
+         },
+         stopZoomPress: function(){
+            if(!this.isStopZoomPress){
+               this.isStopZoomPress = true;
+               this.zoomtl && this.zoomtl.kill();
+               this.guide_press_new.alpha = 0;
+            }
+         },
+         stopZoomClick: function(){
+            if(!this.isStopZoomClick){
+               this.isStopZoomClick = true;
+               this.zoomtl && this.zoomtl.kill();
+               this.guide_click_new.alpha = 0;
+            }
+         },
+         switchToClick: function() {
+            if(this.currentGuide != operation.CLICK){
+               this.currentGuide = operation.CLICK;
+               this.guide_both.alpha = 0;
+               this.guide_press.alpha = 0;
+               this.guide_click.alpha = this.fullOpacity;
+            }
+         },
+         switchToPress: function() {
+            if(this.currentGuide != operation.PRESS){
+               this.currentGuide = operation.PRESS;
+               this.guide_both.alpha = 0;
+               this.guide_click.alpha = 0;
+               this.guide_press.alpha = this.fullOpacity;
+            }
+         },
+         switchToBoth: function(t){
+            if(this.currentGuide != operation.BOTH || t){
+               this.currentGuide = operation.BOTH;
+               TweenLite.to([this.guide_press, this.guide_click], 0.2, {
+                  alpha: 0
+               });
+               TweenLite.to(this.guide_both, 0.5, {
+                  alpha: this.fullOpacity,
+                  delay: 0
+               })
+            }
+         },
+         removeNewGuide: function() {
+            this.removeChild(this.guide_press_new);
+            this.removeChild(this.guide_both_new);
+            this.removeChild(this.guide_click_new);
+         },
       })
    }
    createMan(){
@@ -595,6 +777,7 @@ class Music{
             this.updateJumpPoint(0);
             this.initStepLength = 5;
             this.init(config);
+            this.MIDDLE_SCENE = Game.width - this.man.width / 2;
          },
          startX: 0,
          startY: 0,
@@ -657,7 +840,7 @@ class Music{
             if(t >= 0){
                this.stepLength = 5;
                var baseNum = 200;
-               baseNum = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4);
+               baseNum = t > 250 ? 200 : 0 || Math.sqrt(90 * t + 4e4);
                if(baseNum != this.jumpHeight){
                   this.jumpHeight = baseNum;
                   this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity);
@@ -668,8 +851,234 @@ class Music{
          getReady: function(){
             this.x = this.startX;
             this.y = this.startY;
+         },
+         longPress: function(){
+            if(!Game.isDisabled && !this.isMovingY){
+               this.isMovingX = true;
+               this.isLongPress = true;
+               this.resetStepLength();
+            }
+         },
+         shortTouch: function(time){
+            if(this.clickCount <= 0){
+               ++this.clickCount;
+               if(!Game.isDisabled && !Game.isNoShortClick){
+                  this.isMovingY = true;
+                  this.calcStepLength();
+                  this.jumpStartX = this.x;
+                  this.jumpStartY = this.y;
+                  this.jumpStartTime = time;
+                  jumpFunction.jump2Target();
+               }
+            }
+         },
+         resetStepLength: function(){
+            this.stepLength = 5;
+         },
+         jumpSomewhere: function(x, y, z, o){
+
+         },
+         calcStepLength: function(){
+            var maxNum = Math.max(Game.ticker.getMeasuredFPS(), 15),
+               num = 6 * this.jumpHeight / 50 - 19 || 0;
+            this.stepLength = num + (60 - maxNum) / 4 || 0;
+         },
+         onUpdate: function(e){
+            //this.x += this.stepLength
+            if(!this.isDead){
+               if(Game.isCreativeEnable){
+                  jumpFunction.actionCreativeScene();
+               }else{
+                  if(this.isMovingX || this.isSlideFall){
+                     this.moveX();
+                  }
+                  if(this.isMovingY){
+                     this.moveY(e);
+                  }
+               }
+               if(this.y >= Game.height || this.x >= Game.width || this.x <= 0 || isNaN(this.x) || isNaN(this.y) || this.y <= -30){
+                  this.isDead = true;
+               }
+            }
+         },
+         moveX: function(){
+            let manRight = this.checkCollision(this.manRight),
+            manBottom = this.checkCollision(this.manBottom);
+            //console.log(manRight, manBottom)
+            if(manRight){
+               this.isMovingX = false;
+               this.x -= this.stepLength;
+            }
+            if(manBottom){
+               this.lastStandTime = new Date();
+               this.lastStandY = this.y;
+               this.isSlideFall = false;
+               if(this.vy < 0){
+                  this.y = manBottom.y - this.man.height - this.manTop.height;
+               }
+               this.vy = 0;
+            }else{
+               if(Game.firstTime == 0){
+                  return ++Game.firstTime;
+               }
+               let time = this.lastStandTime ? new Date() - this.lastStandTime : 0,
+                gravity = this.gravity * time * time / 2;
+                this.vy = -this.gravity * time;
+                this.y = this.lastStandY + gravity;
+                this.isSlideFall = true;
+            } 
+            if(this.x < this.MIDDLE_SCENE){
+               this.x += this.stepLength;
+            }
+         },
+         moveY: function(){
+
+         },
+         checkCollision: function(obj){
+            obj = obj || {};
+            var length = Game.collisionSet.length, item;
+            if(length == 0){
+               return null;
+            }
+            for (var i = 0; i < length; ++i) {
+               item = Game.collisionSet[i];
+               if(obj.hitTestObject(item, true)){
+                  return{
+                     target: item,
+                     x: item.x,
+                     y: item.y
+                  }
+               }
+            }
          }
       });
+   }
+   createJumpFunction(){
+      window.jumpFunction = {
+         jump2Target: function(){
+            let man = Game.man;
+            if(Game.isFreeWalk && man.x > Game.MIDDLE_SCENE && man.x < 600 && 36 === man.y){
+               man.jumpSomewhere(man.jumpStartX, man.jumpStartY, Game.MIDDLE_SCENE, 36, -1);
+               Game.isReady2Fall = true;
+            }
+            if(Game.isFreeWalk && Game.scene7 && man.x + man.width >= Game.scene7.block2.x + Game.scene7.x && man.x <= Game.scene7.block2.x + Game.scene7.block2.width + Game.scene7.x){
+               if (Game.scene7.isShooted) return;
+               Game.scene7.isShooted = true;
+               this.jumpAnimate();
+            }
+         },
+         jumpAnimate: function(){
+            let man = Game.man,
+            startObj = {
+               x: man.jumpStartX,
+               y: man.jumpStartY
+            },
+            obj = {
+               x: 656,
+               y: 344
+            };
+            man.isMovingY = false;
+            let obj1 = {
+               x: (startObj.x + obj.x)/2,
+               y:190
+            },
+            obj2 = {
+               x: (obj1.x + startObj.x ) / 2,
+               y: (obj1.y + startObj.y) / 2 - 40
+            },
+            obj3 = {
+               x: (obj1.x + obj.x ) / 2,
+               y: (obj1.y + obj.y) / 2 - 40
+            }
+            let timeLite = new TimelineLite({
+               onComplete: ()=>{
+                  Game.isDisabled = false;
+                  Game.scene8.manCopy.alpha = 1;
+                  Game.man.alpha = 0;
+               },
+               onUpdate: ()=>{
+                  Game.isDisabled = true;
+               }
+            });
+            timeLite.to(man, 0.11, Object.assign({}, obj2,{
+               ease: Power0.easeIn
+            })).to(man, 0.12, Object.assign({}, obj1,{
+               ease: Power0.easeIn
+            })).to(man, 0.11, Object.assign({}, obj3,{
+               ease: Power0.easeOut
+            })).to(man, 0.12, Object.assign({}, obj,{
+               ease: Power0.easeOut
+            }))
+         },
+         actionCreativeScene: function(){
+            let target, man = Game.man,
+            manRight = man.checkCollision(man.manRight);
+            if(man.hitTestObject(Game.scene8.wallTop)){
+               target = {
+                  target: Game.scene8.wallTop
+               }
+            }
+            if(man.isMovingX){
+               if(Game.isTouchTop){
+                  if(this.manPosition()){
+                     man.isMovingX = false;
+                     this.setManPosition();
+                  }else{
+                     man.x -= man.stepLength;
+                     man.isFall2Top = true;
+                     //Game.scene8.manCopy && Game.scene8.manCopy.goto(1, true);
+                  }
+               }else{
+                  if(target && 'wallTop' === target.target.id){
+                     man.y = target.target.height - man.manTop.height;
+                     Game.isTouchTop = true;
+                  }else{
+                     manRight && 'wallRight' === manRight.target.id && (man.x = manRight.x - man.man.width - man.manRight.width);
+                     man.y -= man.stepLength;
+                  }
+               }
+            }
+            if(man.isMovingY){
+               if(man.isFall2Top){
+                  man.isMovingX = true;
+                  let delta = new Date() - man.jumpStartTime,
+                  velocity = man.initVelocity * delta - .5 * man.gravity * delta * delta,
+                  manY = man.jumpStartY + velocity;
+                  man.vy = man.initVelocity - man.gravity * delta;
+                  target = man.checkCollision(man.manTop);
+                  if(man.vy < 0 && target && 'wallTop' === target.target.id){
+                     man.isMovingX = false;
+                     man.isMovingY = false;
+                     man.y = target.y + target.target.height - man.manTop.height;
+                     man.clickCount = 0;
+                     man.vy = 0;
+                     man.stepLength = man.initStepLength;
+                     if(this.manPosition()){
+                        this.setManPosition();
+                     }
+                  }else{
+                     man.y = manY ;
+                     if(this.manPosition()){
+                        this.setManPosition();
+                     }
+                  }
+               }else{
+
+               }
+            }
+
+         },
+         manPosition: function(){
+            let man = Game.man;
+            return man.x <= Game.MIDDLE_SCENE + 4 && man.x >= Game.MIDDLE_SCENE - 4
+         },
+         setManPosition: function(){
+            let man = Game.man;
+            man.x = Game.MIDDLE_SCENE;
+            Game.isDisabled = true;
+            //Game.scene8 && Game.scene8.fall2Tuoyan()
+         }
+      }
    }
 }
 
