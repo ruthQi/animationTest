@@ -21,6 +21,7 @@ class Music{
       this.createJumpFunction();
       this.createBaseFunction();
       this.createScene1();//创建场景1：寻找
+      this.createScene2();
       
       Game.init();
       
@@ -113,6 +114,10 @@ class Music{
             this.scene1 = new Game.Scene1();
             this.scene1.addTo(this.stage);
             //Game.Scene1.init();
+            //console.log('=========', this.scene1.width)
+            this.scene2 = new Game.Scene2();
+            //this.scene2.x = this.scene1.width;
+            this.scene2.addTo(this.stage);
          },
          onUpdate: function(){
             if(this.isReady){
@@ -158,8 +163,8 @@ class Music{
       Game.Scene1 = Hilo.Class.create({
          Extends: Hilo.Container,
          constructor: function(){
+            Game.width = 590;
             Game.Scene1.superclass.constructor.call(this);
-            
             this.init();
          },
          init: function(){
@@ -279,6 +284,33 @@ class Music{
          isOnBlock: function(t) {
             var man = Game.man, i = baseFunction.offset(t);
             return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + Game.width
+         }
+      })
+   }
+   createScene2(){
+      Game.Scene2 = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: function(){
+            Game.width = 780;
+            this.x = 590;
+            Game.Scene2.superclass.constructor.call(this);
+            this.init();
+         },
+         init: function(){
+            this.mengxiang1 = new Hilo.Sprite(Object.assign({}, {x: 0, y: 365}, {
+               paused: true,
+               loop: false,
+               frames: Game.asset.mengxiang_text.getFrame(0)
+            }));
+            this.addChild(this.mengxiang1);
+            /*this.mengxiang_fly_1 = new Hilo.Sprite({
+               x: this.mengxiang1.x + 150,
+               y: this.mengxiang1.y - 100,
+               interval: 1.5,
+               paused: true,
+               loop: true,
+               frames: Game.asset.mengxiang_fly_1.getSprite("xxx")
+            })*/
          }
       })
    }
@@ -535,7 +567,46 @@ class Music{
                   [0, 81, 418, 81],
                   [0, 162, 418, 81]
                ]
-            })
+            });
+            this.mengxiang_text = new Hilo.TextureAtlas({
+               image: this.queue.get('mengxiang-text').content,
+               frames: [
+                  [1352, 1460, 448, 241],
+                  [902, 1703, 448, 241],
+                  [902, 1460, 448, 241],
+                  [1352, 1217, 448, 241],
+                  [902, 1217, 448, 241],
+                  [1352, 974, 448, 241],
+                  [902, 974, 448, 241],
+                  [452, 1703, 448, 241],
+                  [452, 1460, 448, 241],
+                  [452, 1217, 448, 241],
+                  [452, 974, 448, 241],
+                  [1352, 731, 448, 241],
+                  [902, 731, 448, 241],
+                  [452, 731, 448, 241],
+                  [1352, 488, 448, 241],
+                  [902, 488, 448, 241],
+                  [452, 488, 448, 241],
+                  [2, 1703, 448, 241],
+                  [2, 1460, 448, 241],
+                  [2, 1217, 448, 241],
+                  [2, 974, 448, 241],
+                  [2, 731, 448, 241],
+                  [2, 488, 448, 241],
+                  [1352, 245, 448, 241],
+                  [902, 245, 448, 241],
+                  [452, 245, 448, 241],
+                  [2, 245, 448, 241],
+                  [1352, 2, 448, 241],
+                  [902, 2, 448, 241],
+                  [452, 2, 448, 241],
+                  [2, 2, 448, 241]
+               ],
+               sprites: {
+                  xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+               }
+            });
             this.queue.off('complete');
             Game.asset.fire('complete');
          },
