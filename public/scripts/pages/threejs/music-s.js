@@ -14,6 +14,7 @@ class Music{
       this.waterHeight = window.innerHeight - window.innerWidth * 175/375;
       this.initGame();//创建game
       this.createAsset();//添加loading
+      this.createBlockHilo();
       this.createGuide();
       this.createMan();//创建你
       this.createThreejs();
@@ -84,7 +85,7 @@ class Music{
             this.man = new Game.Man({
                id: "me",
                startX: 110,
-               startY: 390
+               startY: 270
             });
             //addTo(x, y):x表示父容器，y表示要添加到索引的位置
             this.man.addTo(this.stage, 1);
@@ -107,16 +108,88 @@ class Music{
          Extends: Hilo.Container,
          constructor: function(){
             Game.Scene1.superclass.constructor.call(this);
-            this.xunzhao = new Hilo.Bitmap(Object.assign({}, {x:60, y: 440}, {
-               image: Game.asset.xunzhao
-            }));
+            
             this.init();
          },
          init: function(){
+            this.xunzhao = new Hilo.Bitmap(Object.assign({}, {x:60, y: 440}, {
+               alpha: 0,
+               image: Game.asset.xunzhao
+            }));
             console.log(this.xunzhao)
             this.addChild(this.xunzhao);
+            this.block1 = new blockHilo({
+               id: 'xunzhao_block_1',
+               x: this.xunzhao.x,
+               y: this.xunzhao.y + 4,
+               width: this.xunzhao.width
+            });
+            this.addChild(this.block1);
+            this.block2 = new blockHilo({
+               x: this.xunzhao.x + this.xunzhao.width - 100,
+               y: this.xunzhao.y + 4,
+               width: 100
+            });
+            this.addChild(this.block2);
+            this.block3 = new blockHilo({
+               x: this.xunzhao.x + this.xunzhao.width - 20,
+               y: this.xunzhao.y + 3,
+               width: 10,
+               height: 10
+            });
+            this.addChild(this.block3);
+            this.sign = new MovingSign({
+               x: this.block1.x + 80,
+               y: this.block1.y - 34
+            });
+            this.guide_jump = new Hilo.Bitmap({
+               x: this.xunzhao.x + 500,
+               y: this.xunzhao.y - 150,
+               image: Game.asset.guide_jump_static
+            });
+            this.dropDown();
+         },
+         dropDown: function(){
+            this.isDisabled = true;
+            var obj = {
+               y: Game.man.y,
+               o: 0
+            },
+            man = Game.man;
+            man.alpha = 0;
+            let timeLite = new TimelineLite();
+            timeLite.to(obj, 0.2, {
+               delay: 1,
+               o: 1,
+               y: this.block1.y - man.height + man.manBottom.height,
+               onUpdate: () => {
+                  man.y = obj.y, man.alpha = obj.o, this.xunzhao.alpha = obj.o
+               },
+               onComplete: () => {
+                  this.isDisabled = false;
+                  this.isNoShortClick = true; //n.showTip1(), t.guide.zoom(0)
+                  this.showTip1();
+                  Game.guide.zoom(0);
+               }
+            })
+
+         },
+         showTip1: function(){
+            this.isShowTip1 || (this.isShowTip1 = true, this.addChild(this.sign));
          }
       })
+   }
+   createBlockHilo(){
+      window.blockHilo = Hilo.Class.create({
+         Extends: Hilo.Bitmap,
+         constructor: function() {
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+            t.width = t.width || 100;
+            t.height = t.height || 150;
+            t.image = Game.asset.block;
+            blockHilo.superclass.constructor.call(this, t);
+         }
+      });
    }
    createThreejs(){
       window.bgDecration = {
@@ -323,9 +396,28 @@ class Music{
          },
          onComplete: function(){
             //alert('000000000')
+            this.block = this.queue.get('block').content;
             this.intro = this.queue.get('intro').content;
             this.man = this.queue.get('man').content;
             this.xunzhao = this.queue.get('xunzhao').content;
+            this.guide_jump_static = this.queue.get('guide-jump-static').content;
+            this.guide_move_static = this.queue.get('guide-move-static').content;
+            this.guide = new Hilo.TextureAtlas({
+               image: this.queue.get('guide').content,
+               frames: [
+                  [2, 84, 395, 39],
+                  [2, 43, 395, 39],
+                  [2, 2, 395, 39]
+               ]
+            });
+            this.guide_new = new Hilo.TextureAtlas({
+               image: this.queue.get('guide-new').content,
+               frames: [
+                  [0, 0, 418, 81],
+                  [0, 81, 418, 81],
+                  [0, 162, 418, 81]
+               ]
+            })
             this.queue.off('complete');
             Game.asset.fire('complete');
          },
@@ -340,16 +432,96 @@ class Music{
       })
    }
    createGuide(){
+      var operation = {
+         BOTH: 0,
+         CLICK: 1,
+         PRESS: 2
+      };
+      window.MovingSign = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: function(){
+            var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : {};
+            MovingSign.superclass.constructor.call(this, t);
+            this.guide_move_static = new Hilo.Bitmap({
+               x: 0,
+               y: 0,
+               image: Game.asset.guide_move_static
+            });
+            this.guide_move_mask = new Hilo.View({
+               x: this.guide_move_static.x - 30,
+               y: this.guide_move_static.y + 14,
+               width: t.width || 0,
+               height: 5,
+               background: "#262231"
+            });
+            this.addChild(this.guide_move_static);
+            this.addChild(this.guide_move_mask);
+         }
+      })
       //使用一下方式，new出来的对象为正确的，如果方法内使用箭头函数，new出来的对象有问题，不能添加到stage中
       window.Guide = Hilo.Class.create({
          Extends: Hilo.Container,
          constructor: function(){
             Guide.superclass.constructor.call(this);
+            var notLength = Game.NOTICE_Y = 100;
+            this.guide_both = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide.getFrame(0),
+               alpha: 0
+            });
+            this.guide_both.x = (Game.width - this.guide_both.width) / 2;
+            //this.addChild(this.guide_both);
+
+            this.guide_click = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide.getFrame(1),
+               alpha: 0,
+               paused: true,
+               loop: false
+            });
+            this.guide_click.x = (Game.width - this.guide_click.width) / 2;
+            //this.addChild(this.guide_click);
+
+            this.guide_press = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide.getFrame(2),
+               alpha: 0,
+               paused: true,
+               loop: false
+            });
+            this.guide_press.x = (Game.width - this.guide_press.width) / 2;
+            //this.addChild(this.guide_press);
+
+            this.guide_both_new = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide_new.getFrame(0),
+               alpha: 0
+            });
+            this.guide_both_new.x = (Game.width - this.guide_both_new.width) / 2;
+            //this.addChild(this.guide_both);
+
+            this.guide_click_new = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide_new.getFrame(1),
+               alpha: 0
+            });
+            this.guide_click_new.x = (Game.width - this.guide_click_new.width) / 2;
+            //this.addChild(this.guide_click);
+
+            this.guide_press_new = new Hilo.Sprite({
+               y: notLength,
+               frames: Game.asset.guide_new.getFrame(2),
+               alpha: 0
+            });
+            this.guide_press_new.x = (Game.width - this.guide_press_new.width) / 2;
+            this.addChild(this.guide_both_new, this.guide_click_new, this.guide_press_new);
             this.intro = new Hilo.Bitmap({
                image: Game.asset.intro
             });
-            this.intro.x = Game.width - this.intro.width >> 1;
-            this.intro.y = Game.height - this.intro.height - 300 >> 1;
+            this.intro.x = (Game.width - this.intro.width) / 2;
+            this.intro.y = (Game.height - this.intro.height - 300) / 2;
+            this.fullOpacity = 1;
+            this.addChild(this.guide_both, this.guide_click, this.guide_press);
          },
          showIntro: function(){
             this.addChild(this.intro);
@@ -369,6 +541,48 @@ class Music{
                   Game.initScene(1, 2);
                }
             })
+         },
+         zoom: function(num){
+            if(!(this.isTag0 && num == 0 || this.isTag1 && num == 1)){
+               let curObj = null;
+               if(num == 0){
+                  this.toggle2Press();
+                  curObj = this.guide_press_new;
+                  this.isTag0 = true;
+               }else{
+                  this.toggle2Click();
+                  curObj = this.guide_click_new;
+                  this.isTag1 = true;
+               }
+               this.zoomtl = new TimelineLite({
+                  repeat: 1,
+                  yoyo: true
+               });
+               this.zoomtl.to(curObj, .3, {
+                  scaleX: 1.02,
+                  scaleY: 1.02
+               }).to(curObj, .3, {
+                  scaleX: 1,
+                  scaleY: 1
+               });
+            }
+            
+         },
+         toggle2Press: function(){
+            if(this.currentGuide != operation.PRESS){
+               this.currentGuide = operation.PRESS;
+               this.guide_both_new.alpha = 0;
+               this.guide_click_new.alpha = 0;
+               this.guide_press_new.alpha = this.fullOpacity;
+            }
+         },
+         toggle2Click: function(){
+            if(this.currentGuide != operation.CLICK){
+               this.currentGuide = operation.CLICK;
+               this.guide_both_new.alpha = 0;
+               this.guide_click_new.alpha = this.fullOpacity;
+               this.guide_press_new.alpha = 0;
+            }
          }
       })
    }
@@ -385,6 +599,11 @@ class Music{
          startX: 0,
          startY: 0,
          jumpHeight: 0,
+         manTop: null,
+         manRight: null,
+         manBottom: null,
+         manLeft: null,
+         man: null,
          init: function(config){
             var width = Game.COVER_WIDTH;
             this.man = new Hilo.Bitmap({
@@ -393,12 +612,46 @@ class Music{
                y: width,
                image: Game.asset.man
             });
-            this.startX = config.startX;
-            this.startY = config.startY;
+            this.manTop = new Hilo.View({
+               id: "manTop",
+               x: width,
+               y: 0,
+               width: this.man.width,
+               height: width,
+               background: "#ccc",
+               visible: false
+            });
+            this.manRight = new Hilo.View({
+               id: "manRight",
+               x: this.man.width + width,
+               y: width,
+               width: width,
+               height: this.man.height,
+               background: "#ccc",
+               visible: false
+            });
+            this.manBottom = new Hilo.View({
+               id: "manBottom",
+               x: width,
+               y: this.man.height + width,
+               width: this.man.width,
+               height: width,
+               background: "#ccc",
+               visible: false
+            });
+            this.manLeft = new Hilo.View({
+               id: "manLeft",
+               x: 0,
+               y: width,
+               width: width,
+               height: this.man.height,
+               background: "#ccc",
+               visible: false
+            })
             this.width = this.man.width + 2 * width;
             this.height = this.man.height + 2 * width;
             //console.log(this.man)
-            this.addChild(this.man);
+            this.addChild(this.man, this.manTop, this.manRight, this.manBottom, this.manLeft);
          },
          updateJumpPoint: function(t){
             if(t >= 0){
