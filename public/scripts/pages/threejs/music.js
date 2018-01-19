@@ -7360,17 +7360,20 @@ default = new g
                paused: !0,
                loop: !1,
                interval: 2
-            }), this.guide_blink.x = game.width - this.guide_blink.width >> 1, this.guide_both = new Hilo.Sprite({
+            }), this.guide_blink.x = game.width - this.guide_blink.width >> 1, 
+            this.guide_both = new Hilo.Sprite({
                y: t,
                frames: game.asset.guide.getFrame(0),
                alpha: 0
-            }), this.guide_both.x = game.width - this.guide_both.width >> 1, this.guide_click = new Hilo.Sprite({
+            }), this.guide_both.x = game.width - this.guide_both.width >> 1, 
+            this.guide_click = new Hilo.Sprite({
                y: t,
                frames: game.asset.guide.getFrame(1),
                alpha: 0,
                paused: !0,
                loop: !1
-            }), this.guide_click.x = game.width - this.guide_click.width >> 1, this.guide_press = new Hilo.Sprite({
+            }), this.guide_click.x = game.width - this.guide_click.width >> 1, 
+            this.guide_press = new Hilo.Sprite({
                y: t,
                frames: game.asset.guide.getFrame(2),
                alpha: 0,
@@ -7388,7 +7391,8 @@ default = new g
                y: t,
                frames: game.asset.guide_new.getFrame(2),
                alpha: 0
-            }), this.guide_press_new.x = game.width - this.guide_press_new.width >> 1, this.addChild(this.guide_both_new), this.addChild(this.guide_click_new), this.addChild(this.guide_press_new), this.intro = new Hilo.Bitmap({
+            }), this.guide_press_new.x = game.width - this.guide_press_new.width >> 1, this.addChild(this.guide_both_new), this.addChild(this.guide_click_new), this.addChild(this.guide_press_new), 
+            this.intro = new Hilo.Bitmap({
                image: game.asset.intro
             }), this.intro.x = game.width - this.intro.width >> 1, this.intro.y = game.height - this.intro.height - 300 >> 1, this.fullOpacity = 1, this.addChild(this.guide_both), this.addChild(this.guide_click), this.addChild(this.guide_press)
          },
@@ -9010,7 +9014,14 @@ default = s, i(162)
             }.bind(this), 20)
          },
          onComplete: function(t) {
-            this.block = this.queue.get("block").content, this.man = this.queue.get("man").content, this.xunzhao = this.queue.get("xunzhao").content, this.guide_move_static = this.queue.get("guide-move-static").content, this.xxx_1 = this.queue.get("xxx-1").content, this.xxx_2 = this.queue.get("xxx-2").content, this.xxx_3 = this.queue.get("xxx-3").content, this.guide_jump = new Hilo.TextureAtlas({
+            this.block = this.queue.get("block").content, 
+            this.man = this.queue.get("man").content, 
+            this.xunzhao = this.queue.get("xunzhao").content, 
+            this.guide_move_static = this.queue.get("guide-move-static").content, 
+            this.xxx_1 = this.queue.get("xxx-1").content, 
+            this.xxx_2 = this.queue.get("xxx-2").content, 
+            this.xxx_3 = this.queue.get("xxx-3").content, 
+            this.guide_jump = new Hilo.TextureAtlas({
                image: this.queue.get("guide-jump").content,
                frames: [
                   [540, 1352, 267, 148],
@@ -9077,21 +9088,25 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
                }
-            }), this.guide_jump_static = this.queue.get("guide-jump-static").content, this.guide = new Hilo.TextureAtlas({
+            }), 
+            this.guide_jump_static = this.queue.get("guide-jump-static").content, 
+            this.guide = new Hilo.TextureAtlas({
                image: this.queue.get("guide").content,
                frames: [
                   [2, 84, 395, 39],
                   [2, 43, 395, 39],
                   [2, 2, 395, 39]
                ]
-            }), this.guide_new = new Hilo.TextureAtlas({
+            }), 
+            this.guide_new = new Hilo.TextureAtlas({
                image: this.queue.get("guide-new").content,
                frames: [
                   [0, 0, 418, 81],
                   [0, 81, 418, 81],
                   [0, 162, 418, 81]
                ]
-            }), this.guide_blink = new Hilo.TextureAtlas({
+            }), 
+            this.guide_blink = new Hilo.TextureAtlas({
                image: this.queue.get("guide-blink").content,
                frames: [
                   [2, 453, 400, 39],
@@ -9111,7 +9126,9 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                }
-            }), this.intro = this.queue.get("intro").content, this.mengxiang_text = new Hilo.TextureAtlas({
+            }), 
+            this.intro = this.queue.get("intro").content, 
+            this.mengxiang_text = new Hilo.TextureAtlas({
                image: this.queue.get("mengxiang-text").content,
                frames: [
                   [1352, 1460, 448, 241],
@@ -9149,7 +9166,8 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
                }
-            }), this.mengxiang_fly_1 = new Hilo.TextureAtlas({
+            }), 
+            this.mengxiang_fly_1 = new Hilo.TextureAtlas({
                image: this.queue.get("mengxiang-fly-1").content,
                frames: [
                   [461, 412, 151, 203],
@@ -9175,7 +9193,8 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
                }
-            }), this.mengxiang_fly_2 = new Hilo.TextureAtlas({
+            }), 
+            this.mengxiang_fly_2 = new Hilo.TextureAtlas({
                image: this.queue.get("mengxiang-fly-2").content,
                frames: [
                   [461, 412, 151, 203],
@@ -9201,7 +9220,8 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
                }
-            }), this.mengxiang_fly_3 = new Hilo.TextureAtlas({
+            }), 
+            this.mengxiang_fly_3 = new Hilo.TextureAtlas({
                image: this.queue.get("mengxiang-fly-3").content,
                frames: [
                   [461, 412, 151, 203],
@@ -9227,7 +9247,9 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
                }
-            }), this.daji_static = this.queue.get("daji-static").content, this.daji = [new Hilo.TextureAtlas({
+            }), 
+            this.daji_static = this.queue.get("daji-static").content, 
+            this.daji = [new Hilo.TextureAtlas({
                image: this.queue.get("daji-0").content,
                frames: [
                   [2, 2, 442, 160],
@@ -9282,7 +9304,8 @@ default = s, i(162)
                sprites: {
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47]
                }
-            }), new Hilo.TextureAtlas({
+            }), 
+            new Hilo.TextureAtlas({
                image: this.queue.get("daji-1").content,
                frames: [
                   [2, 2, 442, 160],
@@ -10617,7 +10640,9 @@ default = s, i(162)
 
    function s(t) {
       var e = t.man;
-      if (t.isFreeWalk && e.x >= t.MIDDLE_SCENE && e.x < 600 && 36 === e.y && (e.jumpSomewhere(e.jumpStartX, e.jumpStartY, t.MIDDLE_SCENE, 36, -1), t.isReady2Fall = !0), t.isFreeWalk && t.s7 && e.x + e.width >= t.s7.block2.x + t.s7.x && e.x <= t.s7.block2.x + t.s7.block2.width + t.s7.x) {
+      if (t.isFreeWalk && e.x >= t.MIDDLE_SCENE && e.x < 600 && 36 === e.y && 
+         (e.jumpSomewhere(e.jumpStartX, e.jumpStartY, t.MIDDLE_SCENE, 36, -1), t.isReady2Fall = !0), 
+         t.isFreeWalk && t.s7 && e.x + e.width >= t.s7.block2.x + t.s7.x && e.x <= t.s7.block2.x + t.s7.block2.width + t.s7.x) {
          if (t.s7.isShooted) return;
          t.s7.isShooted = !0;
          r()
@@ -10789,7 +10814,9 @@ default = n, e.actionCreativeScene = n, e.jump2Target = s
             if (!(t < 0)) {
                this.stepLength = 5;
                var e = 200;
-               e = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4), e != this.jumpHeight && (this.jumpHeight = e, this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity), this.riseTime = Math.sqrt(2 * this.jumpHeight / this.gravity))
+               e = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4), 
+               e != this.jumpHeight && 
+               (this.jumpHeight = e, this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity), this.riseTime = Math.sqrt(2 * this.jumpHeight / this.gravity))
             }
          },
          calcStepLength: function() {
@@ -10852,7 +10879,8 @@ default = n, e.actionCreativeScene = n, e.jump2Target = s
             this.vy < 0 && l ? (this.y = l.y - this.man.height - this.manBottom.height, this.vy = 0, this.isMovingX = !1, this.isMovingY = !1, this.clickCount = 0) : this.y = o >> 0
          },
          onUpdate: function(e) {
-            this.isDead || (t.isCreativeEnable ? (0, n.actionCreativeScene)(t) : ((this.isMovingX || this.isSlideFall) && this.moveX(), this.isMovingY && this.moveY(e)), (this.y >= t.height || this.x >= t.width || this.x <= 0 || isNaN(this.x) || isNaN(this.y) || this.y <= -30) && (this.isDead = !0, console.log("==> æŒ‚äº†")))
+            this.isDead || (t.isCreativeEnable ? (0, n.actionCreativeScene)(t) : 
+               ((this.isMovingX || this.isSlideFall) && this.moveX(), this.isMovingY && this.moveY(e)), (this.y >= t.height || this.x >= t.width || this.x <= 0 || isNaN(this.x) || isNaN(this.y) || this.y <= -30) && (this.isDead = !0, console.log("==> æŒ‚äº†")))
          },
          blink: function() {
             this.blinkTween && this.blinkTween.kill();
@@ -12262,7 +12290,13 @@ default = n, e.actionCreativeScene = n, e.jump2Target = s
          default.bgm.play()
          },
          onUpdate: function() {
-            if (this.loopBGM(), !t.man.isDead && (t.man.isMovingX && t.man.x >= t.MIDDLE_SCENE - t.man.width && !t.isFreeWalk && (this.x -= t.man.stepLength), this.x <= 0 && !this.isFreeWalk && (this.isFreeWalk = !0, t.isFreeWalk = !0, t.collisionSet.push(this.wallRight, this.wallTop)), this.wallRight && t.man.manRight.hitTestObject(this.wallRight, !0) && (t.isCreativeEnable = !0, this.showChuangyi(), this.hideXingFu()), this.checkStandTuoyan(), t.isCreativeEnable && this.manCopy && this.showMancopy(), t.isCreativeEnable && !t.isTouchTop && t.man.y >= 62 && (this.showTip1(), this.guide_right_mask.y = t.man.y + t.man.height - 4), t.isCreativeEnable && !t.isTouchTop && t.man.y < 62 && this.hideTip1(), t.isCreativeEnable && t.isTouchTop && t.man.x > t.MIDDLE_SCENE)) {
+            if (this.loopBGM(), 
+               !t.man.isDead && (t.man.isMovingX && t.man.x >= t.MIDDLE_SCENE - t.man.width && !t.isFreeWalk && (this.x -= t.man.stepLength), 
+                  this.x <= 0 && !this.isFreeWalk && (this.isFreeWalk = !0, 
+                     t.isFreeWalk = !0, 
+                     t.collisionSet.push(this.wallRight, this.wallTop)), 
+                  this.wallRight && t.man.manRight.hitTestObject(this.wallRight, !0) && (t.isCreativeEnable = !0, this.showChuangyi(), this.hideXingFu()), this.checkStandTuoyan(), t.isCreativeEnable && this.manCopy && this.showMancopy(), 
+                  t.isCreativeEnable && !t.isTouchTop && t.man.y >= 62 && (this.showTip1(), this.guide_right_mask.y = t.man.y + t.man.height - 4), t.isCreativeEnable && !t.isTouchTop && t.man.y < 62 && this.hideTip1(), t.isCreativeEnable && t.isTouchTop && t.man.x > t.MIDDLE_SCENE)) {
                if (!this.guide_top_mask || !this.wallRight) return;
                this.guide_top_mask.x = t.man.x + t.man.width, this.guide_top_mask.width = 710 - this.guide_top_mask.x
             }

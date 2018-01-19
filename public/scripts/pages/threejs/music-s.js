@@ -12,6 +12,7 @@ class Music{
       this.dpr = 2;
       this.waterWidth = window.innerWidth;
       this.waterHeight = window.innerHeight - window.innerWidth * 175/375;
+      this.sceneCommon();
       this.initGame();//创建game
       this.createAsset();//添加loading
       this.createBlockHilo();
@@ -40,13 +41,21 @@ class Music{
          newTime: null,
          countLongPress: 0,
          collisionSet: [],
+         sceneOrder: 0,
+         sceneSet: [],
          isCreativeEnable: false,
+         isFreeWalk: false,
+         isTouchTop: false,
+         isDisabled: false,
+         isNoShortClick: false,
+         forceMovingX: false,
+         NOTICE_Y: 100,
          init: function(){
             this.asset = new Game.Assets();
             this.asset.on('complete', ()=>{
                //console.log('0000000000000000000')
                //移除监听
-               this.asset.off("complete");
+               this.asset.off('complete');
                this.initStage();
             }, true);
             this.asset.load();
@@ -56,7 +65,7 @@ class Music{
             this.height = 1334;
             //let scaleX = this.innerwidth/this.width, scaleY = this.innerwidth/this.height;
             this.stage = new Hilo.Stage({
-               renderType: "canvas",
+               renderType: 'canvas',
                width: this.width,
                height: this.height,
                scaleX: this.scaleX,
@@ -97,27 +106,34 @@ class Music{
          },
          initMan: function(){
             this.man = new Game.Man({
-               id: "me",
+               id: 'me',
                startX: 110,
                startY: 270
             });
             //addTo(x, y):x表示父容器，y表示要添加到索引的位置
             this.man.addTo(this.stage, 1);
             this.man.getReady();
-            //this.MIDDLE_SCENE = this.width >> 1
+            this.MIDDLE_SCENE = this.width / 2;
          },
          gameReady: function() {
             this.firstTime = 0;
             this.isReady = true;
          },
          initScene: function(x, y){
-            this.scene1 = new Game.Scene1();
+            this.scene1 = new Game.Scene1({
+               id: 'scene1'
+            });
             this.scene1.addTo(this.stage);
             //Game.Scene1.init();
             //console.log('=========', this.scene1.width)
-            this.scene2 = new Game.Scene2();
+            this.scene2 = new Game.Scene2({
+               id: 'scene2',
+               startX: 590//this.scene1.width
+            });
             //this.scene2.x = this.scene1.width;
             this.scene2.addTo(this.stage);
+            this.sceneSet.push(this.scene1, this.scene2);
+            this.sceneOrder = 2;
          },
          onUpdate: function(){
             if(this.isReady){
@@ -150,22 +166,113 @@ class Music{
          },
          getCurrentScene: function(){
             //console.log('iiiiiiii6')
+            if (this.sceneSet) {
+               var scene1 = this.sceneSet[0],
+                  scene2 = this.sceneSet[1],
+                  manX = this.man.x;
+               if(scene1 && scene2){
+                  if(manX >= scene1.x && manX < scene1.x + scene1.width){
+                     this.currentScene = scene1.id;
+                  }else{
+                     this.currentScene = scene2.id;
+                  }
+               }
+               return this.currentScene;
+            }
          },
          clearScene: function(){
             //console.log('iiiiiiii7')
+            var sceneSet = this.sceneSet;
+            if(sceneSet && sceneSet.length >=2 && (!sceneSet[1] || 'scene11' != sceneSet[1].id)){
+               let sceneid;
+               for(var i = 1; i <= 11; i++){
+                  sceneid = 'scene' + i;
+                  if(this[sceneid] && this[sceneid].x <= -this[sceneid].width){
+                     this[sceneid].dispose();
+                     this.stage.removeChildById(sceneid);
+                     sceneSet.splice(0, 1);
+                     this.sceneOrder++;
+                     this[sceneid] = null
+                  }
+               }
+            }
          },
          updateScene: function(){
             //console.log('iiiiiiii8')
+            let sceneSet = this.sceneSet;
+            if(sceneSet && sceneSet.length < 2){
+               if(Game['Scene' + this.sceneOrder]){
+                  this['scene'+this.sceneOrder] = new Game['Scene' + this.sceneOrder]({
+                     id: 'scene'+this.sceneOrder,
+                     startX: sceneSet[0].x +sceneSet[0].width
+                  }).addTo(this.stage);
+                  this.sceneSet.push(this['scene'+this.sceneOrder]);
+               } 
+            }
          }
       }
    }
+   sceneCommon(){
+      window.sceneCommon = Hilo.Class.create({
+         Extends: Hilo.Container,
+         constructor: function(t) {
+            sceneCommon.superclass.constructor.apply(this);
+            //console.log('=========',t)
+            this.width = t.width || 750;
+            this.height = t.height || 1334;
+            this.initScenePos(t.startX, t.startY);//this.init(t)
+            this.init(t);
+            setTimeout(()=>{
+               this.shortcut();
+            }, 200)
+         },
+         shortcut: function() {},
+         onRecoverCurrent: function(t, e) {},
+         onRecoverNext: function(t, e) {
+            this.x = t.x + t.width
+         },
+         init: function(t) {
+            throw new Error('å­ç±»å®žçŽ°ï¼Œåˆ›å»ºä¸€äº›åœºæ™¯ä¸­éœ€è¦çš„å¯¹è±¡')
+         },
+         dispose: function() {
+            this.clearCollisionSet()
+         },
+         initScenePos: function(t, e) {
+            this.x = t || 0;
+            this.y = e || 0;
+            console.log(this.x)
+         },
+         clearCollisionSet: function() {
+            Game.collisionSet = Game.collisionSet.filter((e) => {
+               return -1 === this.children.indexOf(e)
+            })
+         },
+         onUpdate: function(t) {
+            var man = Game.man;
+            this.updateJumpPoint();
+            if((Game.forceMovingX || man.isMovingX && !Game.isDisabled) && man.x >= man.MIDDLE_SCENE && !Game.isFreeWalk){
+               this.x -= man.stepLength;
+            }
+         },
+         updateJumpPoint: function() {},
+         isOnBlock: function(t) {
+            var man = Game.man, i = baseFunction.offset(t);
+            return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + Game.width
+         },
+         calcBlockDistanceY: function(t) {
+            //console.log('############', this.x + t.x + t.width - Game.man.x);
+            //var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
+            return Game.man.updateJumpPoint(this.x + t.x + t.width - Game.man.x);
+         },
+      })
+   }
    createScene1(){
       Game.Scene1 = Hilo.Class.create({
-         Extends: Hilo.Container,
-         constructor: function(){
+         Extends: sceneCommon,
+         constructor: function(t){
             Game.width = 590;
-            Game.Scene1.superclass.constructor.call(this);
-            this.init();
+            Game.Scene1.superclass.constructor.call(this, t);
+            //this.init();
          },
          init: function(){
             this.xunzhao = new Hilo.Bitmap(Object.assign({}, {x:60, y: 440}, {
@@ -269,6 +376,7 @@ class Music{
          },
          onUpdate: function(){
             //console.log('wwwwwwwwwwwwwwwwwwwwwwww')
+            Game.Scene1.superclass.onUpdate.apply(this)
             this.isShowTip1 && this.sign.updateWidth(this.x);
             //console.log('------------', this.isOnBlock(this.block2))
             if(this.isOnBlock(this.block2)){
@@ -280,43 +388,161 @@ class Music{
                this.hideTip2(); 
                Game.guide.stopZoomClick();
             }
-         },
-         isOnBlock: function(t) {
-            var man = Game.man, i = baseFunction.offset(t);
-            return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + Game.width
          }
       })
    }
    createScene2(){
       Game.Scene2 = Hilo.Class.create({
-         Extends: Hilo.Container,
-         constructor: function(){
+         Extends: sceneCommon,
+         constructor: function(t){
             Game.width = 780;
-            this.x = 590;
-            Game.Scene2.superclass.constructor.call(this);
-            this.init();
+            Game.Scene2.superclass.constructor.call(this, t);
          },
          init: function(){
+            let changeObj = {
+               x: 0,
+               y: 365
+            },
+            obj = {
+               width: 157,
+               height: 95
+            };
             this.mengxiang1 = new Hilo.Sprite(Object.assign({}, {x: 0, y: 365}, {
                paused: true,
                loop: false,
                frames: Game.asset.mengxiang_text.getFrame(0)
             }));
             this.addChild(this.mengxiang1);
-            /*this.mengxiang_fly_1 = new Hilo.Sprite({
+            this.mengxiang_fly_1 = new Hilo.Sprite({
                x: this.mengxiang1.x + 150,
                y: this.mengxiang1.y - 100,
                interval: 1.5,
                paused: true,
                loop: true,
-               frames: Game.asset.mengxiang_fly_1.getSprite("xxx")
-            })*/
-         }
+               frames: Game.asset.mengxiang_fly_1.getSprite('xxx')
+            });
+            this.block1 = new blockHilo({
+               id: 'mengxiang_block_1',
+               x: this.mengxiang1.x + 145,
+               y: this.mengxiang1.y + 80,
+               width: 160
+            });
+            this.addChild(this.block1);
+            changeObj.x += 170 + obj.width;
+
+            this.mengxiang2 = new Hilo.Sprite(Object.assign({}, changeObj, {
+               paused: true,
+               loop: false,
+               frames: Game.asset.mengxiang_text.getFrame(0)
+            }));
+            this.addChild(this.mengxiang2);
+            this.mengxiang_fly_2 = new Hilo.Sprite({
+               x: this.mengxiang2.x + 150,
+               y: this.mengxiang2.y - 100,
+               interval: 1.5,
+               paused: true,
+               loop: true,
+               frames: Game.asset.mengxiang_fly_2.getSprite('xxx')
+            });
+            this.block2 = new blockHilo({
+               x: this.mengxiang2.x + 145,
+               y: this.mengxiang2.y + 80,
+               width: 160
+            });
+            this.addChild(this.block2)
+            changeObj.x += 170 + obj.width;
+            this.mengxiang3 = new Hilo.Sprite(Object.assign({}, changeObj, {
+               paused: true,
+               loop: false,
+               frames: Game.asset.mengxiang_text.getSprite('xxx')
+            }));
+            this.addChild(this.mengxiang3);
+            this.mengxiang_fly_3 = new Hilo.Sprite({
+               x: this.mengxiang3.x + 150,
+               y: this.mengxiang3.y - 100,
+               interval: 1.5,
+               paused: true,
+               loop: true,
+               frames: Game.asset.mengxiang_fly_3.getSprite('xxx')
+            });
+            this.block3 = new blockHilo({
+               x: this.mengxiang3.x + 145,
+               y: this.mengxiang3.y + 80,
+               width: 160
+            });
+            this.addChild(this.block3);
+            this.xxx_2 = new Hilo.Bitmap({
+               x: this.mengxiang2.x,
+               y: Game.NOTICE_Y,
+               alpha: 1,
+               image: Game.asset.xxx_2
+            });
+            Game.collisionSet.push(this.block1, this.block2, this.block3);
+         },
+         onUpdate: function(){
+            let man = Game.man;
+            if(!this.isFalling){
+               if(!this.isShattered && man.x >= this.x + this.block3.x + 68){
+                  Game.isDisabled = true;
+               }
+            }
+            Game.Scene2.superclass.onUpdate.apply(this);
+            if(!this.isShattered){
+               if(man.isMovingY){
+                  this.hideMengxiangFly1();
+                  this.hideMengxiangFly2();
+               }
+               if(this.isOnBlock(this.block3)){
+                  if(!this.isRaining){
+                     this.isRaining = true;
+                     setTimeout(()=>{
+                        console.log('rain')
+                     }, 150)
+                  }
+               }
+               this.showMengxiangFly3();
+               this.fall();
+            }
+
+         },
+         updateJumpPoint: function(){
+            if(this.isOnBlock(this.block1)){
+               this.calcBlockDistanceY(this.block1);
+               this.showMengxiangFly1();
+               Game.guide.hideIntro();
+            }
+         },
+         fall: function(){
+
+         },
+         showMengxiangFly1: function(){
+            if(!this.isMengxiangFly1){
+               this.isMengxiangFly1 = true;
+               this.addChild(this.mengxiang_fly_1);
+               this.mengxiang_fly_1.play();
+            }
+         },
+         hideMengxiangFly1: function(){
+
+         },
+         showMengxiangFly2: function(){
+
+         },
+         hideMengxiangFly2: function(){
+
+         },
+         showMengxiangFly3: function(){
+
+         },
+         hideMengxiangFly3: function(){
+
+         },
       })
    }
    createBaseFunction(){
       window.baseFunction = {
          offset: function(obj){
+            //console.log('%%%%%%%%%%%%%%%%%%',obj)
             if (!obj.parent) return {
                x: 0,
                y: 0
@@ -362,7 +588,7 @@ class Music{
             this.scene = new THREE.Scene;
             this.scene.background = new THREE.Color(2499121);
             var gameBg = (new THREE.TextureLoader).load(this.imgSrc+'game-bg.jpg');
-            THREE.ImageUtils.crossOrigin = "";
+            THREE.ImageUtils.crossOrigin = '';
             gameBg.wrapS = THREE.RepeatWrapping;
             gameBg.wrapT = THREE.MirroredRepeatWrapping;
             this.scene.background = gameBg;
@@ -552,6 +778,9 @@ class Music{
             this.xunzhao = this.queue.get('xunzhao').content;
             this.guide_jump_static = this.queue.get('guide-jump-static').content;
             this.guide_move_static = this.queue.get('guide-move-static').content;
+            this.xxx_1 = this.queue.get('xxx-1').content;
+            this.xxx_2 = this.queue.get('xxx-2').content;
+            this.xxx_3 = this.queue.get('xxx-3').content;
             this.guide = new Hilo.TextureAtlas({
                image: this.queue.get('guide').content,
                frames: [
@@ -607,6 +836,87 @@ class Music{
                   xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
                }
             });
+            this.mengxiang_fly_1 = new Hilo.TextureAtlas({
+               image: this.queue.get('mengxiang-fly-1').content,
+               frames: [
+                  [461, 412, 151, 203],
+                  [767, 207, 151, 203],
+                  [614, 207, 151, 203],
+                  [461, 207, 151, 203],
+                  [308, 617, 151, 203],
+                  [308, 412, 151, 203],
+                  [308, 207, 151, 203],
+                  [155, 617, 151, 203],
+                  [155, 412, 151, 203],
+                  [155, 207, 151, 203],
+                  [767, 2, 151, 203],
+                  [614, 2, 151, 203],
+                  [461, 2, 151, 203],
+                  [308, 2, 151, 203],
+                  [155, 2, 151, 203],
+                  [2, 617, 151, 203],
+                  [2, 412, 151, 203],
+                  [2, 207, 151, 203],
+                  [2, 2, 151, 203]
+               ],
+               sprites: {
+                  xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+               }
+            }), 
+            this.mengxiang_fly_2 = new Hilo.TextureAtlas({
+               image: this.queue.get('mengxiang-fly-2').content,
+               frames: [
+                  [461, 412, 151, 203],
+                  [767, 207, 151, 203],
+                  [614, 207, 151, 203],
+                  [461, 207, 151, 203],
+                  [308, 617, 151, 203],
+                  [308, 412, 151, 203],
+                  [308, 207, 151, 203],
+                  [155, 617, 151, 203],
+                  [155, 412, 151, 203],
+                  [155, 207, 151, 203],
+                  [767, 2, 151, 203],
+                  [614, 2, 151, 203],
+                  [461, 2, 151, 203],
+                  [308, 2, 151, 203],
+                  [155, 2, 151, 203],
+                  [2, 617, 151, 203],
+                  [2, 412, 151, 203],
+                  [2, 207, 151, 203],
+                  [2, 2, 151, 203]
+               ],
+               sprites: {
+                  xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+               }
+            }), 
+            this.mengxiang_fly_3 = new Hilo.TextureAtlas({
+               image: this.queue.get('mengxiang-fly-3').content,
+               frames: [
+                  [461, 412, 151, 203],
+                  [767, 207, 151, 203],
+                  [614, 207, 151, 203],
+                  [461, 207, 151, 203],
+                  [308, 617, 151, 203],
+                  [308, 412, 151, 203],
+                  [308, 207, 151, 203],
+                  [155, 617, 151, 203],
+                  [155, 412, 151, 203],
+                  [155, 207, 151, 203],
+                  [767, 2, 151, 203],
+                  [614, 2, 151, 203],
+                  [461, 2, 151, 203],
+                  [308, 2, 151, 203],
+                  [155, 2, 151, 203],
+                  [2, 617, 151, 203],
+                  [2, 412, 151, 203],
+                  [2, 207, 151, 203],
+                  [2, 2, 151, 203]
+               ],
+               sprites: {
+                  xxx: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+               }
+            })
             this.queue.off('complete');
             Game.asset.fire('complete');
          },
@@ -647,7 +957,7 @@ class Music{
             this.addChild(this.guide_move_mask);
          },
          updateWidth: function(t){
-            console.log(t)
+            //console.log('===========',t)
             var width = Game.man.x + Game.man.manLeft.width - (t + this.x - 37);
             width >= this.guide_move_static.width - 70 ? this.visible = false : this.guide_move_mask.width = width;
          }
@@ -735,6 +1045,12 @@ class Music{
                   Game.initScene(1, 2);
                }
             })
+         },
+         hideIntro: function(){
+            if(!this.isHideIntro){
+               this.isHideIntro = true;
+               this.removeChild(this.intro);
+            }
          },
          zoom: function(num){
             if(!(this.isTag0 && num == 0 || this.isTag1 && num == 1)){
@@ -848,7 +1164,7 @@ class Music{
             this.updateJumpPoint(0);
             this.initStepLength = 5;
             this.init(config);
-            this.MIDDLE_SCENE = Game.width - this.man.width / 2;
+            this.MIDDLE_SCENE = (Game.width - this.man.width) / 2;
          },
          startX: 0,
          startY: 0,
@@ -867,39 +1183,39 @@ class Music{
                image: Game.asset.man
             });
             this.manTop = new Hilo.View({
-               id: "manTop",
+               id: 'manTop',
                x: width,
                y: 0,
                width: this.man.width,
                height: width,
-               background: "#ccc",
+               background: '#ccc',
                visible: false
             });
             this.manRight = new Hilo.View({
-               id: "manRight",
+               id: 'manRight',
                x: this.man.width + width,
                y: width,
                width: width,
                height: this.man.height,
-               background: "#ccc",
+               background: '#ccc',
                visible: false
             });
             this.manBottom = new Hilo.View({
-               id: "manBottom",
+               id: 'manBottom',
                x: width,
                y: this.man.height + width,
                width: this.man.width,
                height: width,
-               background: "#ccc",
+               background: '#ccc',
                visible: false
             });
             this.manLeft = new Hilo.View({
-               id: "manLeft",
+               id: 'manLeft',
                x: 0,
                y: width,
                width: width,
                height: this.man.height,
-               background: "#ccc",
+               background: '#ccc',
                visible: false
             })
             this.width = this.man.width + 2 * width;
@@ -908,10 +1224,11 @@ class Music{
             this.addChild(this.man, this.manTop, this.manRight, this.manBottom, this.manLeft);
          },
          updateJumpPoint: function(t){
+            console.log('***************', t)
             if(t >= 0){
                this.stepLength = 5;
                var baseNum = 200;
-               baseNum = t > 250 ? 200 : 0 || Math.sqrt(90 * t + 4e4);
+               baseNum = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4);
                if(baseNum != this.jumpHeight){
                   this.jumpHeight = baseNum;
                   this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity);
@@ -934,6 +1251,7 @@ class Music{
             if(this.clickCount <= 0){
                ++this.clickCount;
                if(!Game.isDisabled && !Game.isNoShortClick){
+                  console.log('------------------------')
                   this.isMovingY = true;
                   this.calcStepLength();
                   this.jumpStartX = this.x;
@@ -947,7 +1265,7 @@ class Music{
             this.stepLength = 5;
          },
          jumpSomewhere: function(x, y, z, o){
-
+            console.log(x,y,z,o)
          },
          calcStepLength: function(){
             var maxNum = Math.max(Game.ticker.getMeasuredFPS(), 15),
@@ -960,6 +1278,7 @@ class Music{
                if(Game.isCreativeEnable){
                   jumpFunction.actionCreativeScene();
                }else{
+                  console.log('$$$$$$$$$$$$$$$$$$$$$$$', this.isMovingX)
                   if(this.isMovingX || this.isSlideFall){
                      this.moveX();
                   }
@@ -980,6 +1299,7 @@ class Music{
                this.isMovingX = false;
                this.x -= this.stepLength;
             }
+            //console.log('^^^^^^^^^^^^^^^^^^^^',manBottom)
             if(manBottom){
                this.lastStandTime = new Date();
                this.lastStandY = this.y;
@@ -1002,11 +1322,63 @@ class Music{
                this.x += this.stepLength;
             }
          },
-         moveY: function(){
-
+         moveY: function(y){
+            //console.log('444444444444444444444444')
+            console.log('=============',y)
+            this.isMovingX = true;
+            let delta = new Date() - this.jumpStartTime,
+                curY = delta + y,
+                velocity = this.initVelocity * delta - (this.gravity * delta * delta / 2),
+                jumpY = (this.jumpStartY - velocity) || 0,
+                manBottom = this.checkCollision(this.manBottom),
+                num;
+                this.vy = this.initVelocity - this.gravity * delta;
+            if(!Game.isFreeWalk && this.vy < 0 && !manBottom){
+               console.log('9999999999999999999999')
+               num = (this.gravity * y * (delta + curY) / 2 - this.initVelocity * y) || 0;
+               let curSet, obj, delH, 
+                   colLength = Game.collisionSet.length, 
+                   maxX = this.x + this.manLeft.width - 10, 
+                   maxH = jumpY + this.man.height - this.manBottom.height;
+                   console.log('%%%%%%%%%%%%',this.x)
+                   console.log('++++++++++++++++++',colLength)
+               for(var i = 0; i < colLength; i++){
+                  console.log('00000000000000000000')
+                  curSet = Game.collisionSet[i];
+                  obj = baseFunction.offset(curSet);
+                  
+                  console.log(maxX, obj, curSet)
+                  if(maxX >= obj.x && maxX <= obj.x + curSet.width){
+                     console.log('333333333333333333')
+                     delH = obj.y - maxH;
+                     if(num - delH > 0){
+                        console.log(this.x)
+                        console.log('1111111111111111111')
+                        jumpY = obj.y - this.man.height - this.manBottom.height;
+                        this.vy = 0;
+                        this.isMovingY = false;
+                        this.isMovingX = false;
+                        this.clickCount = 0;
+                        break;
+                     }
+                  }
+               }
+               if(this.vy < 0){
+                  if(manBottom){
+                     console.log('222222222222222222')
+                     this.y = isCheck.y - this.man.height - this.manBottom.height;
+                     this.vy = 0;
+                     this.isMovingX = false;
+                     this.isMovingY = false;
+                     this.clickCount = 0;
+                  }else{
+                     this.y = jumpY;
+                  }
+               }
+            }
          },
          checkCollision: function(obj){
-            obj = obj || {};
+            obj = obj || this;
             var length = Game.collisionSet.length, item;
             if(length == 0){
                return null;
@@ -1028,7 +1400,9 @@ class Music{
       window.jumpFunction = {
          jump2Target: function(){
             let man = Game.man;
+            console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwww')
             if(Game.isFreeWalk && man.x > Game.MIDDLE_SCENE && man.x < 600 && 36 === man.y){
+               console.log('======================')
                man.jumpSomewhere(man.jumpStartX, man.jumpStartY, Game.MIDDLE_SCENE, 36, -1);
                Game.isReady2Fall = true;
             }
