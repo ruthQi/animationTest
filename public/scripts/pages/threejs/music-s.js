@@ -1,5 +1,9 @@
 
 var THREE = require('libs/three.min.js');
+var EffectComposer = require('libs/EffectComposer.js');
+var CustomShader = require('libs/CustomShader.js');
+var ShaderPass = require('libs/ShaderPass.js');
+var RenderPass = require('libs/RenderPass.js');
 require('libs/hilo/hilo-standalone.js');
 var $ = require('libs/jquery.js');
 import {TweenLite, TimelineLite} from 'gsap';
@@ -240,7 +244,7 @@ class Music{
          initScenePos: function(t, e) {
             this.x = t || 0;
             this.y = e || 0;
-            console.log(this.x)
+            //console.log(this.x)
          },
          clearCollisionSet: function() {
             Game.collisionSet = Game.collisionSet.filter((e) => {
@@ -251,18 +255,21 @@ class Music{
             var man = Game.man;
             this.updateJumpPoint();
             if((Game.forceMovingX || man.isMovingX && !Game.isDisabled) && man.x >= man.MIDDLE_SCENE && !Game.isFreeWalk){
+               console.log('----------------**********************', man.stepLength);
                this.x -= man.stepLength;
             }
          },
          updateJumpPoint: function() {},
          isOnBlock: function(t) {
             var man = Game.man, i = baseFunction.offset(t);
-            return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + Game.width
+            return man.y + man.height - man.manBottom.height == i.y && man.x >= i.x - man.width && man.x <= i.x + t.width
          },
          calcBlockDistanceY: function(t) {
             //console.log('############', this.x + t.x + t.width - Game.man.x);
-            //var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
-            return Game.man.updateJumpPoint(this.x + t.x + t.width - Game.man.x);
+            var e = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
+            //console.log('##################', t, this)
+            //console.log(this.x , t.x , t.width ,Game.man.x);
+            return Game.man.updateJumpPoint(this.x + t.x + t.width - Game.man.x + e);
          },
       })
    }
@@ -270,7 +277,9 @@ class Music{
       Game.Scene1 = Hilo.Class.create({
          Extends: sceneCommon,
          constructor: function(t){
+            console.log('==================================')
             Game.width = 590;
+            console.log(Game.width)
             Game.Scene1.superclass.constructor.call(this, t);
             //this.init();
          },
@@ -337,6 +346,11 @@ class Music{
                }
             })
          },
+         /*updateJumpPoint: function() {
+            if(this.isOnBlock(this.block1)){
+               this.calcBlockDistanceY(this.block1, -30);
+            }
+         },*/
          showTip1: function(){
             if(!this.isShowTip1){
                this.isShowTip1 = true, this.addChild(this.sign)
@@ -378,7 +392,7 @@ class Music{
             //console.log('wwwwwwwwwwwwwwwwwwwwwwww')
             Game.Scene1.superclass.onUpdate.apply(this)
             this.isShowTip1 && this.sign.updateWidth(this.x);
-            //console.log('------------', this.isOnBlock(this.block2))
+            console.log('------------+++++++++++', this.x);
             if(this.isOnBlock(this.block2)){
                this.showTip2();
                Game.guide.stopZoomPress();
@@ -407,7 +421,7 @@ class Music{
                width: 157,
                height: 95
             };
-            this.mengxiang1 = new Hilo.Sprite(Object.assign({}, {x: 0, y: 365}, {
+            this.mengxiang1 = new Hilo.Sprite(Object.assign({}, changeObj, {
                paused: true,
                loop: false,
                frames: Game.asset.mengxiang_text.getFrame(0)
@@ -480,6 +494,7 @@ class Music{
             Game.collisionSet.push(this.block1, this.block2, this.block3);
          },
          onUpdate: function(){
+            console.log('------------+++++++++++', this.x);
             let man = Game.man;
             if(!this.isFalling){
                if(!this.isShattered && man.x >= this.x + this.block3.x + 68){
@@ -582,6 +597,8 @@ class Music{
             this.initScene();
             //console.log()
             this.animate();
+            //this.addPostEffect();
+            //this.addEvent();
             $('#musicViewBack').append(this.renderer.domElement);
          },
          initScene: function(){
@@ -593,6 +610,53 @@ class Music{
             gameBg.wrapT = THREE.MirroredRepeatWrapping;
             this.scene.background = gameBg;
             this.initParticles();
+         },
+         addPostEffect: function(){
+            var width = window.innerWidth,
+                height = window.innerHeight;
+                console.log(this.renderer)
+               this.composer = new THREE.EffectComposer(this.renderer);
+               this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+               this.composer.setSize(width * 2, height * 2);
+               this.distortPass = new THREE.ShaderPass( THREE.CustomShader );
+               this.distortPass.enabled = true;
+               this.distortPass.amp = 0;
+               this.distortPass.targetAmp = 0;
+               this.distortPass.lerpUpWeight = .15;
+               this.distortPass.lerpDownWeight = .3;
+               this.distortPass.time = 0;
+               this.distortPass.updateUniforms = function(){
+                  var t = this.targetAmp - this.amp;
+                  this.amp += t * (t > 0 ? this.lerpUpWeight : this.lerpDownWeight);
+                  this.uniforms.u_amp.value = this.amp;
+               };
+               this.distortPass.renderToScreen = true;
+               this.distortPass.uniforms.u_aspect.value = height / width;
+               this.composer.addPass(this.distortPass);
+               this.distortInterval = setInterval(() => {
+                  this.distortPass.updateUniforms()
+               }, 1e3 / 24)
+         },
+         addEvent: function(){
+            $(window).on('touchstar', ()=>{
+               this.animateDistort();
+            });
+            $(window).on('touchmove', (e)=>{
+               var width = window.innerWidth,
+                  height = window.innerHeight;
+               e.touches && e.touches.length > 0 ? this.distortPass.uniforms.u_mouse.value.set(e.touches[0].pageX / width, 1 - e.touches[0].pageY / height) : this.distortPass.uniforms.u_mouse.value.set(e.pageX / width, 1 - e.pageY / height);
+            });
+            $(window).on('touchend', ()=>{
+               this.disdortTimer = cancelAnimationFrame(this.disdortTimer);
+               this.distortPass.targetAmp = 0;
+            })
+         },
+         animateDistort: function(){
+            this.disdortTimer && cancelAnimationFrame(this.disdortTimer);
+            this.disdortTimer = requestAnimationFrame(()=>{this.animateDistort()});
+            this.distortPass.uniforms.u_time.value = ++this.distortPass.time / 100;
+            this.distortPass.targetAmp += .2;
+            this.distortPass.targetAmp = Math.min(.8, this.distortPass.targetAmp);
          },
          initParticles: function(){
             var width = window.innerWidth, height = window.innerHeight, material, geometry;
@@ -1165,6 +1229,7 @@ class Music{
             this.initStepLength = 5;
             this.init(config);
             this.MIDDLE_SCENE = (Game.width - this.man.width) / 2;
+            console.log(Game.width, this.man.width);
          },
          startX: 0,
          startY: 0,
@@ -1229,6 +1294,7 @@ class Music{
                this.stepLength = 5;
                var baseNum = 200;
                baseNum = t > 250 ? 200 : 0 | Math.sqrt(90 * t + 4e4);
+               console.log(baseNum);
                if(baseNum != this.jumpHeight){
                   this.jumpHeight = baseNum;
                   this.initVelocity = Math.sqrt(2 * this.jumpHeight * this.gravity);
@@ -1237,6 +1303,7 @@ class Music{
             }
          },
          getReady: function(){
+            //console.log(this.startX, this.startY)
             this.x = this.startX;
             this.y = this.startY;
          },
@@ -1251,7 +1318,7 @@ class Music{
             if(this.clickCount <= 0){
                ++this.clickCount;
                if(!Game.isDisabled && !Game.isNoShortClick){
-                  console.log('------------------------')
+                  console.log('------------------------', this.x, this.y)
                   this.isMovingY = true;
                   this.calcStepLength();
                   this.jumpStartX = this.x;
@@ -1268,9 +1335,11 @@ class Music{
             console.log(x,y,z,o)
          },
          calcStepLength: function(){
+            console.log('*****************%%%%%%%%%%%%%%%%')
             var maxNum = Math.max(Game.ticker.getMeasuredFPS(), 15),
-               num = 6 * this.jumpHeight / 50 - 19 || 0;
-            this.stepLength = num + (60 - maxNum) / 4 || 0;
+               num = 6 * this.jumpHeight / 50 - 19 | 0;
+            this.stepLength = num + (60 - maxNum) / 4 | 0;
+            console.log(this.stepLength)
          },
          onUpdate: function(e){
             //this.x += this.stepLength
@@ -1278,7 +1347,7 @@ class Music{
                if(Game.isCreativeEnable){
                   jumpFunction.actionCreativeScene();
                }else{
-                  console.log('$$$$$$$$$$$$$$$$$$$$$$$', this.isMovingX)
+                  //console.log('$$$$$$$$$$$$$$$$$$$$$$$', this.isMovingX)
                   if(this.isMovingX || this.isSlideFall){
                      this.moveX();
                   }
@@ -1296,6 +1365,7 @@ class Music{
             manBottom = this.checkCollision(this.manBottom);
             //console.log(manRight, manBottom)
             if(manRight){
+               //console.log('--------------------=====================')
                this.isMovingX = false;
                this.x -= this.stepLength;
             }
@@ -1305,7 +1375,7 @@ class Music{
                this.lastStandY = this.y;
                this.isSlideFall = false;
                if(this.vy < 0){
-                  this.y = manBottom.y - this.man.height - this.manTop.height;
+                  this.y = manBottom.y - this.man.height - this.manTop.height>>0;
                }
                this.vy = 0;
             }else{
@@ -1318,42 +1388,38 @@ class Music{
                 this.y = this.lastStandY + gravity;
                 this.isSlideFall = true;
             } 
+            console.log(this.MIDDLE_SCENE)
             if(this.x < this.MIDDLE_SCENE){
+               console.log(this.x)
                this.x += this.stepLength;
+
             }
          },
          moveY: function(y){
             //console.log('444444444444444444444444')
-            console.log('=============',y)
+            //console.log('=============',y)
             this.isMovingX = true;
             let delta = new Date() - this.jumpStartTime,
                 curY = delta + y,
-                velocity = this.initVelocity * delta - (this.gravity * delta * delta / 2),
-                jumpY = (this.jumpStartY - velocity) || 0,
+                velocity = this.initVelocity * delta - (this.gravity * delta * delta >> 1),
+                jumpY = this.jumpStartY - velocity | 0,
                 manBottom = this.checkCollision(this.manBottom),
                 num;
                 this.vy = this.initVelocity - this.gravity * delta;
             if(!Game.isFreeWalk && this.vy < 0 && !manBottom){
-               console.log('9999999999999999999999')
-               num = (this.gravity * y * (delta + curY) / 2 - this.initVelocity * y) || 0;
+               num = this.gravity * y * (delta + curY) / 2 - this.initVelocity * y | 0;
                let curSet, obj, delH, 
                    colLength = Game.collisionSet.length, 
                    maxX = this.x + this.manLeft.width - 10, 
                    maxH = jumpY + this.man.height - this.manBottom.height;
-                   console.log('%%%%%%%%%%%%',this.x)
-                   console.log('++++++++++++++++++',colLength)
+
                for(var i = 0; i < colLength; i++){
-                  console.log('00000000000000000000')
                   curSet = Game.collisionSet[i];
                   obj = baseFunction.offset(curSet);
-                  
-                  console.log(maxX, obj, curSet)
                   if(maxX >= obj.x && maxX <= obj.x + curSet.width){
-                     console.log('333333333333333333')
                      delH = obj.y - maxH;
                      if(num - delH > 0){
                         console.log(this.x)
-                        console.log('1111111111111111111')
                         jumpY = obj.y - this.man.height - this.manBottom.height;
                         this.vy = 0;
                         this.isMovingY = false;
@@ -1363,17 +1429,16 @@ class Music{
                      }
                   }
                }
-               if(this.vy < 0){
-                  if(manBottom){
-                     console.log('222222222222222222')
-                     this.y = isCheck.y - this.man.height - this.manBottom.height;
-                     this.vy = 0;
-                     this.isMovingX = false;
-                     this.isMovingY = false;
-                     this.clickCount = 0;
-                  }else{
-                     this.y = jumpY;
-                  }
+            }
+            if(this.vy < 0){
+               if(manBottom){
+                  this.y = manBottom.y - this.man.height - this.manBottom.height;
+                  this.vy = 0;
+                  this.isMovingX = false;
+                  this.isMovingY = false;
+                  this.clickCount = 0;
+               }else{
+                  this.y = jumpY;
                }
             }
          },
@@ -1385,6 +1450,8 @@ class Music{
             }
             for (var i = 0; i < length; ++i) {
                item = Game.collisionSet[i];
+               //console.log(item)
+               //物体与障碍是否发生碰撞
                if(obj.hitTestObject(item, true)){
                   return{
                      target: item,

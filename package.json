@@ -36,6 +36,7 @@
     "request": "^2.79.0",
     "run-sequence": "^1.2.2",
     "three": "^0.86.0",
+    "three-effectcomposer": "0.0.1",
     "video.js": "^6.2.0",
     "videojs-contrib-hls": "^5.7.0",
     "vuex": "^2.3.1",
