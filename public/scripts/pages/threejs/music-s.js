@@ -2,6 +2,7 @@
 var THREE = require('libs/three.min.js');
 var EffectComposer = require('libs/EffectComposer.js');
 var CustomShader = require('libs/CustomShader.js');
+var CopyShader = require('libs/CopyShader.js');
 var ShaderPass = require('libs/ShaderPass.js');
 var RenderPass = require('libs/RenderPass.js');
 require('libs/hilo/hilo-standalone.js');
@@ -597,8 +598,8 @@ class Music{
             this.initScene();
             //console.log()
             this.animate();
-            //this.addPostEffect();
-            //this.addEvent();
+            this.addPostEffect();
+            this.addEvent();
             $('#musicViewBack').append(this.renderer.domElement);
          },
          initScene: function(){
@@ -614,11 +615,14 @@ class Music{
          addPostEffect: function(){
             var width = window.innerWidth,
                 height = window.innerHeight;
-                console.log(this.renderer)
+                //console.log(this.renderer)
                this.composer = new THREE.EffectComposer(this.renderer);
                this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
                this.composer.setSize(width * 2, height * 2);
+               this.copyPass = new THREE.ShaderPass(THREE.CopyShader);
+               this.copyPass.renderToScreen  = true;
                this.distortPass = new THREE.ShaderPass( THREE.CustomShader );
+               console.log(this.distortPass)
                this.distortPass.enabled = true;
                this.distortPass.amp = 0;
                this.distortPass.targetAmp = 0;
@@ -626,19 +630,21 @@ class Music{
                this.distortPass.lerpDownWeight = .3;
                this.distortPass.time = 0;
                this.distortPass.updateUniforms = function(){
+                  //console.log(this.targetAmp, this.amp)
                   var t = this.targetAmp - this.amp;
                   this.amp += t * (t > 0 ? this.lerpUpWeight : this.lerpDownWeight);
                   this.uniforms.u_amp.value = this.amp;
                };
                this.distortPass.renderToScreen = true;
                this.distortPass.uniforms.u_aspect.value = height / width;
+               this.composer.addPass(this.copyPass);
                this.composer.addPass(this.distortPass);
                this.distortInterval = setInterval(() => {
                   this.distortPass.updateUniforms()
                }, 1e3 / 24)
          },
          addEvent: function(){
-            $(window).on('touchstar', ()=>{
+            $(window).on('touchstart', ()=>{
                this.animateDistort();
             });
             $(window).on('touchmove', (e)=>{
@@ -732,7 +738,7 @@ class Music{
                   this.points[0].position.x < -width && (this.points[0].position.x = width);
                   this.points[1].position.x < -width && (this.points[1].position.x = width);
                   this.bigPoints.position.x < -width && (this.bigPoints.position.x = width);
-               }/*else{
+               }else{
                   if(this.isMoveDown){
                      this.points[0].position.y -= 1;
                      this.points[1].position.y -= 1;
@@ -741,7 +747,7 @@ class Music{
                      this.points[1].position.y < -height && (this.points[1].position.y = height);
                      this.points[2].position.y < -height && (this.points[2].position.y = height);
                   }
-               }*/
+               }
                this.renderer.render(this.scene, this.camera);
             }
          }
