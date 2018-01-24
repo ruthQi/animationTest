@@ -118,7 +118,7 @@ class Music{
             //addTo(x, y):x表示父容器，y表示要添加到索引的位置
             this.man.addTo(this.stage, 1);
             this.man.getReady();
-            this.MIDDLE_SCENE = this.width / 2;
+            this.MIDDLE_SCENE = this.width >> 1;
          },
          gameReady: function() {
             this.firstTime = 0;
@@ -1043,7 +1043,7 @@ class Music{
                frames: Game.asset.guide.getFrame(0),
                alpha: 0
             });
-            this.guide_both.x = (Game.width - this.guide_both.width) / 2;
+            this.guide_both.x = (Game.width - this.guide_both.width) >> 1;
             //this.addChild(this.guide_both);
 
             this.guide_click = new Hilo.Sprite({
@@ -1053,7 +1053,7 @@ class Music{
                paused: true,
                loop: false
             });
-            this.guide_click.x = (Game.width - this.guide_click.width) / 2;
+            this.guide_click.x = (Game.width - this.guide_click.width) >> 1;
             //this.addChild(this.guide_click);
 
             this.guide_press = new Hilo.Sprite({
@@ -1063,7 +1063,7 @@ class Music{
                paused: true,
                loop: false
             });
-            this.guide_press.x = (Game.width - this.guide_press.width) / 2;
+            this.guide_press.x = (Game.width - this.guide_press.width) >> 1;
             //this.addChild(this.guide_press);
 
             this.guide_both_new = new Hilo.Sprite({
@@ -1071,7 +1071,7 @@ class Music{
                frames: Game.asset.guide_new.getFrame(0),
                alpha: 0
             });
-            this.guide_both_new.x = (Game.width - this.guide_both_new.width) / 2;
+            this.guide_both_new.x = (Game.width - this.guide_both_new.width) >> 1;
             //this.addChild(this.guide_both);
 
             this.guide_click_new = new Hilo.Sprite({
@@ -1079,7 +1079,7 @@ class Music{
                frames: Game.asset.guide_new.getFrame(1),
                alpha: 0
             });
-            this.guide_click_new.x = (Game.width - this.guide_click_new.width) / 2;
+            this.guide_click_new.x = (Game.width - this.guide_click_new.width) >> 1;
             //this.addChild(this.guide_click);
 
             this.guide_press_new = new Hilo.Sprite({
@@ -1087,13 +1087,13 @@ class Music{
                frames: Game.asset.guide_new.getFrame(2),
                alpha: 0
             });
-            this.guide_press_new.x = (Game.width - this.guide_press_new.width) / 2;
+            this.guide_press_new.x = (Game.width - this.guide_press_new.width) >> 1;
             this.addChild(this.guide_both_new, this.guide_click_new, this.guide_press_new);
             this.intro = new Hilo.Bitmap({
                image: Game.asset.intro
             });
-            this.intro.x = (Game.width - this.intro.width) / 2;
-            this.intro.y = (Game.height - this.intro.height - 300) / 2;
+            this.intro.x = (Game.width - this.intro.width) >> 1;
+            this.intro.y = (Game.height - this.intro.height - 300) >> 1;
             this.fullOpacity = 1;
             this.addChild(this.guide_both, this.guide_click, this.guide_press);
          },
@@ -1234,7 +1234,7 @@ class Music{
             this.updateJumpPoint(0);
             this.initStepLength = 5;
             this.init(config);
-            this.MIDDLE_SCENE = (Game.width - this.man.width) / 2;
+            this.MIDDLE_SCENE = (Game.width - this.man.width) >> 1;
             console.log(Game.width, this.man.width);
          },
          startX: 0,
@@ -1389,7 +1389,7 @@ class Music{
                   return ++Game.firstTime;
                }
                let time = this.lastStandTime ? new Date() - this.lastStandTime : 0,
-                gravity = this.gravity * time * time / 2;
+                gravity = this.gravity * time * time >> 1;
                 this.vy = -this.gravity * time;
                 this.y = this.lastStandY + gravity;
                 this.isSlideFall = true;
@@ -1413,7 +1413,7 @@ class Music{
                 num;
                 this.vy = this.initVelocity - this.gravity * delta;
             if(!Game.isFreeWalk && this.vy < 0 && !manBottom){
-               num = this.gravity * y * (delta + curY) / 2 - this.initVelocity * y | 0;
+               num = this.gravity * y * (delta + curY) >> 1 - this.initVelocity * y | 0;
                let curSet, obj, delH, 
                    colLength = Game.collisionSet.length, 
                    maxX = this.x + this.manLeft.width - 10, 
