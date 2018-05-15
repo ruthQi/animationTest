@@ -1,0 +1,40 @@
+.button{
+   position: relative;
+   appearance: none;
+   background: #f72359;
+   padding: 1em 2em;
+   border: none;
+   color: #fff;
+   font-size: 1.2em;
+   cursor: pointer;
+   outline: none;
+   overflow: hidden;
+   border-radius: 100px;
+   display: inline-block;
+   width: 400px;
+   height: 60px;
+   line-height: 60px;
+   text-align: center;
+   span{
+      position: relative;
+   }
+   &::before{
+      --size: 0;
+      content: '';
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--size);
+      height: var(--size);
+      //radial-gradient:径向渐变； linear-gradient：线性渐变
+      //closest-side:指定径向渐变的半径长度为从圆心到离圆心最近的边
+      //closest-corner:指定径向渐变的半径长度为从圆心到离圆心最近的角
+      //farthest-side:最远端
+      background: radial-gradient(circle closest-side, #4405f7, transparent);
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease;
+   }
+   &:hover::before{
+      --size: 400px;
+   }
+}

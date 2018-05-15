@@ -34,6 +34,9 @@ module.exports = function(app) {
    app.use('/whs', whs);
    app.use('/potter', potter);
    app.use('/miss', miss);
+   app.use('/testBtn', function(req, res, next){
+      res.render('pages/testBtn');
+   })
    app.get('/season', function(req, res, next){
       res.render('pages/pixi/season');
    });
