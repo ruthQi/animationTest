@@ -34,6 +34,7 @@ module.exports = function(app) {
    app.use('/whs', whs);
    app.use('/potter', potter);
    app.use('/miss', miss);
+   //炫酷按钮
    app.use('/testBtn', function(req, res, next){
       res.render('pages/testBtn');
    })
@@ -42,6 +43,10 @@ module.exports = function(app) {
    });
    app.get('/music', function(req, res, next){
       res.render('pages/threejs/music');
+   })
+   //使用C3D实现简单造物节
+   app.get('/zwj', function(req, res, next){
+      res.render('pages/c3d/zwj');
    })
 
 };
