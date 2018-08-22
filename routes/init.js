@@ -15,7 +15,7 @@ var collada = require('./pages/h5/collada');//灌篮高手 threejs
 var twentyth = require('./pages/h5/20th');//20周年 gsap
 var whs = require('./pages/h5/whs');//新版threejs
 var simple = require('./pages/h5/simple');
-var miss = require('./pages/h5/miss');
+var miss = require('./pages/h5/miss');//失踪
 
 module.exports = function(app) {
     app.use('/', gsap);
@@ -35,7 +35,7 @@ module.exports = function(app) {
    app.use('/potter', potter);
    app.use('/miss', miss);
    //炫酷按钮
-   app.use('/testBtn', function(req, res, next){
+   app.get('/testBtn', function(req, res, next){
       res.render('pages/testBtn');
    })
    app.get('/season', function(req, res, next){
@@ -47,6 +47,10 @@ module.exports = function(app) {
    //使用C3D实现简单造物节
    app.get('/zwj', function(req, res, next){
       res.render('pages/c3d/zwj');
+   })
+
+   app.get('/rongge', function(req, res, next){
+      res.render('pages/h5/rongge');
    })
 
 };

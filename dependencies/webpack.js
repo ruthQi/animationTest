@@ -34,9 +34,7 @@ var getConfig = function(env) {
     return {
         cache: true,
         context: path.join(process.cwd(), ''),
-        entry: {
-            'index': ['./public/scripts/pages/index.js']
-        },
+        entry: {},
         output: {
             path: path.join(process.cwd(), './public/dist/scripts/pages'),
             filename: '[name].js',
@@ -44,7 +42,7 @@ var getConfig = function(env) {
         },
         externals: {},
         module: {
-            loaders: [{
+            rules: [{
                 test: /\.(jpe?g|png|gif|svg)$/i,
                 loader: "url-loader",
                 query: {}
